@@ -1,0 +1,6 @@
+name: ingress-anubis
+arguments:
+  license: GPL-3.0
+  org: jaredallard
+modules:
+  - name: github.com/rgst-io/stencil-golang

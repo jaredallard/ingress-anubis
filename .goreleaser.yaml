@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+project_name: ingress-anubis
+report_sizes: true
+metadata:
+  mod_timestamp: "{{ .CommitTimestamp }}"
+builds:
+  - main: ./cmd/ingress-anubis
+    flags:
+      - -trimpath
+    ldflags:
+      - -s
+      - -w
+      ## <<Stencil::Block(ingress-anubisLdflags)>>
+
+      ## <</Stencil::Block>>
+    env:
+      - CGO_ENABLED=0
+    goarch:
+      - amd64
+      - arm64
+      ## <<Stencil::Block(ingress-anubisExtraArch)>>
+
+      ## <</Stencil::Block>>
+    goos:
+      - linux
+      - darwin
+      - windows
+      ## <<Stencil::Block(ingress-anubisExtraOS)>>
+
+      ## <</Stencil::Block>>
+    ignore:
+      - goos: windows
+        goarch: arm
+    mod_timestamp: "{{ .CommitTimestamp }}"
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+changelog:
+  use: git
+release:
+  prerelease: "auto"
+  footer: |-
+    **Full Changelog**: https://github.com/jaredallard/ingress-anubis/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+## <<Stencil::Block(extraReleaseOpts)>>
+
+## <</Stencil::Block>>

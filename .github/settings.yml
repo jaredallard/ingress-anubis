@@ -1,0 +1,6 @@
+# Documentation can be found at:
+# https://github.com/repository-settings/app/blob/master/docs/configuration.md
+_extends: jaredallard/jaredallard:settings.yml
+## <<Stencil::Block(custom)>>
+
+## <</Stencil::Block>>
