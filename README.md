@@ -31,6 +31,10 @@ present:
 
 ## Installing
 
+Your cluster should already have the following installed:
+
+- [ingress-nginx]
+
 ```bash
 helm install --create-namespace --namespace ingress-anubis \
   ingress-anubis oci://ghcr.io/jaredallard/helm-charts/ingress-anubis
@@ -42,6 +46,13 @@ For available configuration options, see the `config` key in
 [`values.yaml`](./deploy/charts/ingress-anubis/values.yaml), or in
 [`config.go`](./internal/config/config.go) until further documentation is
 written.
+
+## Usage
+
+Once [installed](#installing), simply set `ingressClassName` to `anubis`
+and watch as your site is now behind it :tada:!
+
+To configure various settings, see [configuration](#configuration).
 
 ## Development
 
