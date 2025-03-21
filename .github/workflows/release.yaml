@@ -58,7 +58,7 @@ jobs:
           key: ${{ github.workflow }}-${{ runner.os }}-go-mod-cache-${{ hashFiles('go.sum') }}
       - name: Retrieve goreleaser version
         run: |-
-          echo "version=$(mise current goreleaser)" >> "$GITHUB_OUTPUT"
+          echo "version=$(mise current "ubi:goreleaser/goreleaser-pro")" >> "$GITHUB_OUTPUT"
         id: goreleaser
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -88,7 +88,7 @@ jobs:
       - name: Create release artifacts and Github Release
         uses: goreleaser/goreleaser-action@v6
         with:
-          distribution: goreleaser
+          distribution: goreleaser-pro
           version: v${{ steps.goreleaser.outputs.version }}
           args: release --release-notes CHANGELOG.md --clean
         env:
