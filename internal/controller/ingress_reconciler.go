@@ -273,7 +273,6 @@ func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIngr
 
 	_, err := controllerutil.CreateOrUpdate(ctx, ir.client, ing, func() error {
 		ing.Spec = *origIngress.Spec.DeepCopy()
-		ing.ObjectMeta.Labels = origIngress.ObjectMeta.DeepCopy().GetLabels()
 		ing.ObjectMeta.Annotations = origIngress.ObjectMeta.DeepCopy().GetAnnotations()
 
 		ing.Spec.IngressClassName = &ir.cfg.WrappedIngressClassName
