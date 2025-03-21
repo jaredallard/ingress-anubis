@@ -4,7 +4,7 @@ project_name: ingress-anubis
 report_sizes: true
 after:
   hooks:
-    - cmd: ./scripts/publish-helm.sh
+    - cmd: ./scripts/publish-helm.sh {{ .Version }}
       if: "{{ not .IsSnapshot }}"
 metadata:
   mod_timestamp: "{{ .CommitTimestamp }}"
