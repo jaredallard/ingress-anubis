@@ -2,6 +2,9 @@
 version: 2
 project_name: ingress-anubis
 report_sizes: true
+before:
+  hooks:
+    - cmd: go mod download
 after:
   hooks:
     - cmd: ./scripts/publish-helm.sh {{ .Version }}
