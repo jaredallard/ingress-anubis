@@ -22,6 +22,7 @@ pushd "$REPO_ROOT/deploy/charts/ingress-anubis" >/dev/null
 yq e -i '.version = "'"${NEXT_VERSION//v/}"'"' Chart.yaml
 yq e -i '.appVersion = "'"${NEXT_VERSION//v/}"'"' Chart.yaml
 
+rm -rf ./*.tgz
 helm package .
 helm push ./*.tgz oci://ghcr.io/jaredallard/helm-charts
 popd >/dev/null
