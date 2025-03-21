@@ -10,10 +10,10 @@ garbage collection, and the like. State management is hard :smile:
 
 ## Goals
 
- - Wrap [ingress-nginx] with anubis in front of simple ingresses (one
-   service).
- - Only require `ingressClassName` to be set to `anubis` to enable, and
-   summarily disable.
+- Wrap [ingress-nginx] with anubis in front of simple ingresses (one
+  service).
+- Only require `ingressClassName` to be set to `anubis` to enable, and
+  summarily disable.
 
 ## Limitations
 
