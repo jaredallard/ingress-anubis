@@ -18,9 +18,38 @@
 // Package config contains the configuration.
 package config
 
+import "github.com/caarlos0/env/v11"
+
 // Config contains the configuration
 type Config struct {
 	// Namespace that the ingress controller is running in and should
 	// create resources in.
-	Namespace string `env:"NAMESPACE"`
+	Namespace string `env:"NAMESPACE" envDefault:"ingress-anubis"`
+
+	// AnubisVersion is the version of Anubis to use. If not set, then the
+	// latest version known to the controller at build time will be used.
+	AnubisVersion string `env:"ANUBIS_VERSION" envDefault:"v1.13.0"`
+
+	// AnubisImage is the docker image to use, note that the version (tag)
+	// comes from [Config.AnubisVersion].
+	AnubisImage string `env:"ANUBIS_IMAGE" envDefault:"ghcr.io/techarohq/anubis"`
+
+	// WrappedIngressClassName is the name of the ingressClass to use for
+	// the ingress managed by anubis. While this is configurable, only
+	// nginx has been tested (though, in theory, any should work).
+	WrappedIngressClassName string `env:"WRAPPED_INGRESS_CLASS_NAME" envDefault:"nginx"`
+
+	// LeaderElection enables or disables leader election. This should
+	// usually always be on.
+	LeaderElection bool `env:"LEADER_ELECTION" envDefault:"true"`
+}
+
+// Load returns a configuration object from the environment.
+func Load() (*Config, error) {
+	var cfg Config
+	if err := env.Parse(&cfg); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }

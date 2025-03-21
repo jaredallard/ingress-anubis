@@ -26,58 +26,47 @@ import (
 	"github.com/jaredallard/ingress-anubis/internal/config"
 	"go.rgst.io/stencil/v2/pkg/slogext"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// KubernetesService is the concrete implementation of the serviceActivity interface
-// which defines methods to start and stop a service. In this case the service
-// being implemented is a kubernetes controller/webhook.
+// KubernetesService contains all of the setup and logic for the
+// Kubernetes controller(s).
 type KubernetesService struct {
-	scheme *runtime.Scheme
-	log    slogext.Logger
+	log slogext.Logger
+	cfg *config.Config
 }
 
-// NewKubernetesService creates a new KubernetesService instance
-// scoped to this particular scheme.
-func NewKubernetesService(log slogext.Logger) *KubernetesService {
-	return &KubernetesService{
-		log:    log,
-		scheme: runtime.NewScheme(),
-	}
+// NewKubernetesService creates a new [KubernetesService] instance.
+func NewKubernetesService(cfg *config.Config, log slogext.Logger) *KubernetesService {
+	return &KubernetesService{log, cfg}
 }
 
-// Run starts a Kubernetes controller/webhook.
-//
-// Run returns on context cancellation, on a call to Close, or on failure.
+// Run starts the kubernetes controller(s)
 func (s *KubernetesService) Run(ctx context.Context) error {
 	log.SetLogger(logr.FromSlogHandler(s.log.GetHandler()))
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	opts := ctrl.Options{
 		Logger: logr.FromSlogHandler(s.log.GetHandler()),
-		// LeaderElection:          true,
-		// LeaderElectionID:        "ingress-anubis.jaredallard.github.io",
-		// LeaderElectionNamespace: "ingress-anubis", // TODO(jaredallard): Configurable
-	})
+	}
+	if s.cfg.LeaderElection {
+		opts.LeaderElection = true
+		opts.LeaderElectionID = "ingress-anubis.jaredallard.github.io"
+		opts.LeaderElectionNamespace = s.cfg.Namespace
+	}
+
+	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), opts)
 	if err != nil {
 		return fmt.Errorf("failed to create manager: %w", err)
 	}
 
-	err = builder.
+	if err := builder.
 		ControllerManagedBy(mgr).
 		For(&networkingv1.Ingress{}).
-		Complete(&IngressReconciler{log: s.log, cfg: &config.Config{Namespace: "ingress-anubis"}, client: mgr.GetClient()})
-	if err != nil {
+		Complete(&IngressReconciler{s.log, s.cfg, mgr.GetClient()}); err != nil {
 		return fmt.Errorf("failed to create controller: %w", err)
 	}
 
 	return mgr.Start(ctx)
-}
-
-// Close cleans up webhooks and controllers managed by this instance.
-func (s *KubernetesService) Close(_ context.Context) error {
-	// TODO(jaredallard): Implement
-	return nil
 }

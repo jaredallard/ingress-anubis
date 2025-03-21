@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/jaredallard/ingress-anubis/internal/config"
 	"github.com/jaredallard/ingress-anubis/internal/controller"
 	"go.rgst.io/stencil/v2/pkg/slogext"
 )
@@ -14,14 +15,13 @@ func entrypoint(log slogext.Logger) error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
 	defer cancel()
 
-	svc := controller.NewKubernetesService(log)
-	defer svc.Close(context.Background())
-
-	if err := svc.Run(ctx); err != nil {
+	cfg, err := config.Load()
+	if err != nil {
 		return err
 	}
 
-	return nil
+	svc := controller.NewKubernetesService(cfg, log)
+	return svc.Run(ctx)
 }
 
 func main() {

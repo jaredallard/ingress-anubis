@@ -74,16 +74,41 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 	}
 
 	if origIng.GetLabels()[ManagedLabel] == "true" {
-		return reconcile.Result{}, reconcile.TerminalError(fmt.Errorf("attempted to reconcile ingress owned by sefl"))
+		return reconcile.Result{}, reconcile.TerminalError(fmt.Errorf("attempted to reconcile ingress owned by self"))
 	}
-
-	// TODO(jaredallard): If we have more than one target with the
-	// ingress, we don't technically support that today, so error. Maybe
-	// we'll make this better :)
 
 	ir.log.Info("reconciling ingress", slog.String("name", req.Name), slog.String("namespace", req.Namespace))
 
-	if err := ir.reconcileDeployment(ctx, req); err != nil {
+	// Grab the first valid backend from the ingress, we'll use that as
+	// anubis' target. Note that technically ingresses can have more than
+	// one target, so this won't work in that case.
+	var svcBackend *networkingv1.IngressServiceBackend
+	if origIng.Spec.DefaultBackend != nil { // Preference to default backend
+		svcBackend = origIng.Spec.DefaultBackend.Service
+	} else {
+		if len(origIng.Spec.Rules) == 0 {
+			return reconcile.Result{}, reconcile.TerminalError(fmt.Errorf("no rules or default backend in ingress"))
+		}
+
+		rule := origIng.Spec.Rules[0]
+		if rule.HTTP == nil {
+			return reconcile.Result{}, reconcile.TerminalError(fmt.Errorf("ingress rule 0 HTTP was nil"))
+		}
+
+		if len(rule.HTTP.Paths) == 0 {
+			return reconcile.Result{}, reconcile.TerminalError(fmt.Errorf("ingress rule 0 paths was empty"))
+		}
+
+		path := rule.HTTP.Paths[0]
+		svcBackend = path.Backend.Service
+	}
+
+	target, err := ir.getTargetFromService(ctx, origIng.Namespace, svcBackend)
+	if err != nil {
+		return reconcile.Result{}, err
+	}
+
+	if err := ir.reconcileDeployment(ctx, target, req); err != nil {
 		return reconcile.Result{}, err
 	}
 
@@ -98,8 +123,38 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 	return reconcile.Result{}, nil
 }
 
+// getTargetFromService returns a that can be used to communicate with
+// the given service in isb from inside of Kubernetes.
+func (ir *IngressReconciler) getTargetFromService(ctx context.Context, ns string, isb *networkingv1.IngressServiceBackend) (string, error) {
+	// If the target is a name, we need to look up the service's real
+	// port.
+	port := isb.Port.Number
+	if portName := isb.Port.Name; portName != "" {
+		svcKey := crclient.ObjectKey{Namespace: ns, Name: isb.Name}
+		var svc corev1.Service
+		if err := ir.client.Get(ctx, svcKey, &svc); err != nil {
+			return "", fmt.Errorf("failed to look up service for port name translation: %w", err)
+		}
+
+		// Find the port
+		for _, p := range svc.Spec.Ports {
+			if p.Name != portName {
+				continue
+			}
+
+			port = p.Port
+			break
+		}
+		if port == 0 { // Didn't find it?
+			return "", fmt.Errorf("failed to find port %s in service %s", portName, svcKey)
+		}
+	}
+
+	return fmt.Sprintf("http://%s.%s.svc.cluster.local:%d", isb.Name, ns, port), nil
+}
+
 // reconcileDeployment ensures that a deployment of anubis exists
-func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, req reconcile.Request) error {
+func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target string, req reconcile.Request) error {
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "ia-" + req.Name,
@@ -129,22 +184,18 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, req reconc
 		dep.Spec.Replicas = ptr.To(int32(1))
 		dep.Spec.Strategy = appsv1.DeploymentStrategy{Type: appsv1.RecreateDeploymentStrategyType}
 
-		// update the Deployment pod template
 		dep.Spec.Template = corev1.PodTemplateSpec{
 			ObjectMeta: metav1.ObjectMeta{Labels: labels},
 			Spec: corev1.PodSpec{
 				Containers: []corev1.Container{{
 					Name:  "main",
-					Image: "ghcr.io/techarohq/anubis:v1.13.0", // TODO(jaredallard): make configurable
+					Image: ir.cfg.AnubisImage + ":" + ir.cfg.AnubisVersion,
 					Env: []corev1.EnvVar{
 						{Name: "BIND", Value: ":8080"},
 						{Name: "DIFFICULTY", Value: "4"},
 						{Name: "METRICS_BIND", Value: ":9090"},
 						{Name: "SERVE_ROBOTS_TXT", Value: "true"},
-
-						// TODO(jaredallard): Read from the original ingress. This
-						// is just for testing
-						{Name: "TARGET", Value: "http://forgejo-http.forgejo.svc.cluster.local:3000"},
+						{Name: "TARGET", Value: target},
 					},
 					ReadinessProbe: &corev1.Probe{
 						FailureThreshold: 3,
@@ -225,7 +276,7 @@ func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIngr
 		ing.ObjectMeta.Labels = origIngress.ObjectMeta.DeepCopy().GetLabels()
 		ing.ObjectMeta.Annotations = origIngress.ObjectMeta.DeepCopy().GetAnnotations()
 
-		ing.Spec.IngressClassName = ptr.To("nginx") // TODO(jaredallard): configurable
+		ing.Spec.IngressClassName = &ir.cfg.WrappedIngressClassName
 
 		// Ensure our labels are set.
 		if ing.ObjectMeta.Labels == nil {
