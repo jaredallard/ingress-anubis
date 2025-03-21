@@ -29,6 +29,19 @@ present:
   changes occur unless the source ingress is updated, triggering the
   reconciliation loop.
 
+## Installing
+
+```bash
+helm install ingress-anubis oci://ghcr.io/jaredallard/helm-charts
+```
+
+## Configuration
+
+For available configuration options, see the `config` key in
+[`values.yaml`](./deploy/charts/ingress-anubis/values.yaml), or in
+[`config.go`](./internal/config/config.go) until further documentation is
+written.
+
 ## Development
 
 We use `mise` to manage the versions of our tools in usage as well as
