@@ -3,13 +3,14 @@
 [tools]
 bun = "latest"
 git-cliff = "latest"
-golang = "1.24.0"
-golangci-lint = "1.64.5"
+golang = "1.24.1"
+golangci-lint = "1.64.8"
 goreleaser = "latest"
 "go:gotest.tools/gotestsum" = "1.12.0"
 "go:golang.org/x/tools/cmd/goimports" = "latest"
 "go:mvdan.cc/sh/v3/cmd/shfmt" = "latest"
 "go:github.com/thenativeweb/get-next-version" = "latest"
+"kubebuilder" = "4.5.1"
 
 [tasks.build]
 description = "Build a binary for the current platform/architecture"
@@ -46,5 +47,12 @@ description = "Run tests"
 run = "gotestsum"
 
 ## <<Stencil::Block(custom)>>
+[tasks.dev]
+description = "Live reload target (use with `mise run watch`)"
+depends = ["build"]
+run = ["./bin/ingress-anubis"]
 
+[tasks.watch]
+description = "Watch for changes"
+run = ["mise watch -t dev --restart"]
 ## <</Stencil::Block>>
