@@ -2,6 +2,10 @@
 version: 2
 project_name: ingress-anubis
 report_sizes: true
+after:
+  hooks:
+    - cmd: ./scripts/publish-helm.sh
+      if: "{{ not .IsSnapshot }}"
 metadata:
   mod_timestamp: "{{ .CommitTimestamp }}"
 builds:
@@ -81,5 +85,4 @@ release:
     **Full Changelog**: https://github.com/jaredallard/ingress-anubis/compare/{{ .PreviousTag }}...{{ .Tag }}
 
 ## <<Stencil::Block(extraReleaseOpts)>>
-
 ## <</Stencil::Block>>

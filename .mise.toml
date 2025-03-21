@@ -5,7 +5,9 @@ bun = "latest"
 git-cliff = "latest"
 golang = "1.24.1"
 golangci-lint = "1.64.8"
-goreleaser = "latest"
+"ubi:goreleaser/goreleaser-pro" = { version = "latest", exe = "goreleaser" }
+helm = "3"
+yq = "latest"
 "go:gotest.tools/gotestsum" = "1.12.0"
 "go:golang.org/x/tools/cmd/goimports" = "latest"
 "go:mvdan.cc/sh/v3/cmd/shfmt" = "latest"
@@ -46,6 +48,11 @@ description = "Run tests"
 run = "gotestsum"
 
 ## <<Stencil::Block(custom)>>
+[tasks.release-dryrun]
+description = "Test a release"
+env = { "GORELEASE_KEY" = "op://Private/goreleaser pro/license key" }
+run = "op run --no-masking -- goreleaser --snapshot --clean"
+
 [tasks.dev]
 description = "Live reload target (use with `mise run watch`)"
 depends = ["build"]
