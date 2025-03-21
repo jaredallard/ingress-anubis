@@ -1,6 +1,6 @@
 # ingress-anubis
 
-WIP ingress controller for Anubis.
+WIP ingress controller for [anubis].
 
 ## Disclaimer
 
@@ -24,5 +24,6 @@ for task management. Check out the [mise] documentation to get started!
 
 GPL-3.0
 
+[anubis]: https://github.com/TecharoHQ/anubis
 [mise]: https://mise.jdx.dev
 [ingress-nginx]: https://github.com/kubernetes/ingress-nginx
