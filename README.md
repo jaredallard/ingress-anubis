@@ -32,7 +32,8 @@ present:
 ## Installing
 
 ```bash
-helm install ingress-anubis oci://ghcr.io/jaredallard/helm-charts
+helm install --create-namespace --namespace ingress-anubis \
+  ingress-anubis oci://ghcr.io/jaredallard/helm-charts/ingress-anubis
 ```
 
 ## Configuration
