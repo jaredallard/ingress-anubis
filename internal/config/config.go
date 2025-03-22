@@ -28,7 +28,7 @@ type Config struct {
 
 	// AnubisVersion is the version of Anubis to use. If not set, then the
 	// latest version known to the controller at build time will be used.
-	AnubisVersion string `env:"ANUBIS_VERSION" envDefault:"v1.14.0"`
+	AnubisVersion string `env:"ANUBIS_VERSION" envDefault:"v1.14.2"`
 
 	// AnubisImage is the docker image to use, note that the version (tag)
 	// comes from [Config.AnubisVersion].
