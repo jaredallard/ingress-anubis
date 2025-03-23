@@ -1,12 +1,12 @@
 # ingress-anubis
 
-WIP ingress controller for [anubis].
+Kubernetes ingress controller for [anubis].
 
 ## Disclaimer
 
-This is NOT AT ALL production software and may never be. Likely bugs
-that will exist are: lack of upwards flowing reconciliation, perfect
-garbage collection, and the like. State management is hard :smile:
+This is NOT AT ALL production software and may never be. See
+[limitations](#limitations) for issues that are present and may never be
+fixed!
 
 ## Goals
 
@@ -20,8 +20,6 @@ garbage collection, and the like. State management is hard :smile:
 In line with the above goals, the following limitations are currently
 present:
 
-- When an ingress is deleted, garbage collection of the created
-  resources is not done (WIP)
 - An ingress with more than one target will only point to the first
   found target. This is because anubis only supports one target and this
   controller only manages one instance of anubis per ingress, currently.

@@ -78,6 +78,12 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 		return reconcile.Result{}, reconcile.TerminalError(fmt.Errorf("attempted to reconcile ingress owned by self"))
 	}
 
+	// Ingress was deleted, clean up resources.
+	if !origIng.DeletionTimestamp.IsZero() {
+		ir.log.Info("ingress was deleted, pruning resources", slog.String("name", req.Name), slog.String("namespace", req.Namespace))
+		return reconcile.Result{}, ir.deleteResources(ctx, req.Name)
+	}
+
 	ir.log.Info("reconciling ingress", slog.String("name", req.Name), slog.String("namespace", req.Namespace))
 
 	// Grab the first valid backend from the ingress, we'll use that as
@@ -127,6 +133,31 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 	}
 
 	return reconcile.Result{}, nil
+}
+
+func (ir *IngressReconciler) deleteResources(ctx context.Context, name string) error {
+	if err := ir.client.Delete(ctx, &networkingv1.Ingress{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "ia" + name,
+			Namespace: ir.cfg.Namespace,
+		},
+	}); err != nil {
+		return fmt.Errorf("failed to delete wrapped ingress: %w", err)
+	}
+
+	if err := ir.client.Delete(ctx, &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{Name: "ia" + name, Namespace: ir.cfg.Namespace},
+	}); err != nil {
+		return fmt.Errorf("failed to delete service: %w", err)
+	}
+
+	if err := ir.client.Delete(ctx, &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{Name: "ia" + name, Namespace: ir.cfg.Namespace},
+	}); err != nil {
+		return fmt.Errorf("failed to delete deployment: %w", err)
+	}
+
+	return nil
 }
 
 // getTargetFromService returns a that can be used to communicate with
