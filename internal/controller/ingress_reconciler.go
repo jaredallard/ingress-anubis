@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"slices"
 	"strconv"
 
 	"github.com/jaredallard/ingress-anubis/internal/config"
@@ -37,7 +38,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-// Label keys
 const (
 	// ManagedLabel is the label used to track what is managed by this
 	// controller.
@@ -45,6 +45,9 @@ const (
 
 	// OwningLabel is the label used to store the owning ingress.
 	OwningLabel = "ingress-anubis.jaredallard.github.com/owner"
+
+	// FinalizerKey is the key to use for ingress-anubis's finalizer.
+	FinalizerKey = "ingress-anubis.jaredallard.github.com/finalizer"
 )
 
 // IngressReconciler is the main reconciler of the controller. See
@@ -78,13 +81,44 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 		return reconcile.Result{}, reconcile.TerminalError(fmt.Errorf("attempted to reconcile ingress owned by self"))
 	}
 
+	log := ir.log.With(slog.String("name", req.Name), slog.String("namespace", req.Namespace))
+
 	// Ingress was deleted, clean up resources.
 	if !origIng.DeletionTimestamp.IsZero() {
-		ir.log.Info("ingress was deleted, pruning resources", slog.String("name", req.Name), slog.String("namespace", req.Namespace))
-		return reconcile.Result{}, ir.deleteResources(ctx, req.Name)
+		log.Info("ingress was deleted, pruning resources")
+
+		if err := ir.deleteResources(ctx, req.Name); err != nil {
+			return reconcile.Result{}, fmt.Errorf("failed to prune resources: %w", err)
+		}
+
+		// Remove the finalizer if it exists
+		if slices.Contains(origIng.Finalizers, FinalizerKey) {
+			patch := crclient.StrategicMergeFrom(origIng.DeepCopy())
+			origIng.Finalizers = slices.Delete(origIng.Finalizers, slices.Index(origIng.Finalizers, FinalizerKey), 1)
+			if err := ir.client.Patch(ctx, origIng, patch); err != nil {
+				return reconcile.Result{}, fmt.Errorf("failed to remove finalizer: %w", err)
+			}
+		}
+
+		log.Info("finished pruning resources and removed finalizer")
+
+		return reconcile.Result{}, nil
 	}
 
-	ir.log.Info("reconciling ingress", slog.String("name", req.Name), slog.String("namespace", req.Namespace))
+	log.Info("reconciling ingress")
+
+	// If we don't have a finalizer set for us, add it.
+	if !slices.Contains(origIng.Finalizers, FinalizerKey) {
+		log.Info("adding finalizer")
+
+		patch := crclient.StrategicMergeFrom(origIng.DeepCopy())
+		origIng.Finalizers = append(origIng.Finalizers, FinalizerKey)
+		if err := ir.client.Patch(ctx, origIng, patch); err != nil {
+			return reconcile.Result{}, fmt.Errorf("failed to add finalizer: %w", err)
+		}
+
+		return reconcile.Result{Requeue: true}, nil
+	}
 
 	// Grab the first valid backend from the ingress, we'll use that as
 	// anubis' target. Note that technically ingresses can have more than
@@ -135,26 +169,39 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 	return reconcile.Result{}, nil
 }
 
+// deleteResources cleans up all resources created by this controller,
+// if they exist
 func (ir *IngressReconciler) deleteResources(ctx context.Context, name string) error {
-	if err := ir.client.Delete(ctx, &networkingv1.Ingress{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "ia" + name,
-			Namespace: ir.cfg.Namespace,
-		},
-	}); err != nil {
-		return fmt.Errorf("failed to delete wrapped ingress: %w", err)
+	meta := metav1.ObjectMeta{
+		Name:      "ia-" + name,
+		Namespace: ir.cfg.Namespace,
 	}
 
-	if err := ir.client.Delete(ctx, &corev1.Service{
-		ObjectMeta: metav1.ObjectMeta{Name: "ia" + name, Namespace: ir.cfg.Namespace},
-	}); err != nil {
-		return fmt.Errorf("failed to delete service: %w", err)
+	ing := &networkingv1.Ingress{}
+	if err := ir.client.Get(ctx, crclient.ObjectKeyFromObject(&networkingv1.Ingress{ObjectMeta: meta}), ing); err == nil {
+		if err := ir.client.Delete(ctx, ing); err != nil {
+			return fmt.Errorf("failed to delete wrapped ingress: %w", err)
+		}
+	} else if err := crclient.IgnoreNotFound(err); err != nil {
+		return fmt.Errorf("failed to check existence of wrapped ingress: %w", err)
 	}
 
-	if err := ir.client.Delete(ctx, &appsv1.Deployment{
-		ObjectMeta: metav1.ObjectMeta{Name: "ia" + name, Namespace: ir.cfg.Namespace},
-	}); err != nil {
-		return fmt.Errorf("failed to delete deployment: %w", err)
+	svc := &corev1.Service{}
+	if err := ir.client.Get(ctx, crclient.ObjectKeyFromObject(&corev1.Service{ObjectMeta: meta}), svc); err == nil {
+		if err := ir.client.Delete(ctx, svc); err != nil {
+			return fmt.Errorf("failed to delete service: %w", err)
+		}
+	} else if err := crclient.IgnoreNotFound(err); err != nil {
+		return fmt.Errorf("failed to check existence of service: %w", err)
+	}
+
+	dep := &appsv1.Deployment{}
+	if err := ir.client.Get(ctx, crclient.ObjectKeyFromObject(&appsv1.Deployment{ObjectMeta: meta}), dep); err == nil {
+		if err := ir.client.Delete(ctx, dep); err != nil {
+			return fmt.Errorf("failed to delete deployment: %w", err)
+		}
+	} else if err := crclient.IgnoreNotFound(err); err != nil {
+		return fmt.Errorf("failed to check existence of deployment: %w", err)
 	}
 
 	return nil
