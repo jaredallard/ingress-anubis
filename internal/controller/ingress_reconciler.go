@@ -131,7 +131,8 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 
 // getTargetFromService returns a that can be used to communicate with
 // the given service in isb from inside of Kubernetes.
-func (ir *IngressReconciler) getTargetFromService(ctx context.Context, ns string, isb *networkingv1.IngressServiceBackend) (string, error) {
+func (ir *IngressReconciler) getTargetFromService(ctx context.Context, ns string,
+	isb *networkingv1.IngressServiceBackend) (string, error) {
 	// If the target is a name, we need to look up the service's real
 	// port.
 	port := isb.Port.Number
@@ -160,7 +161,8 @@ func (ir *IngressReconciler) getTargetFromService(ctx context.Context, ns string
 }
 
 // reconcileDeployment ensures that a deployment of anubis exists
-func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target string, icfg *config.IngressConfig, req reconcile.Request) error {
+func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target string,
+	icfg *config.IngressConfig, req reconcile.Request) error {
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "ia-" + req.Name,
