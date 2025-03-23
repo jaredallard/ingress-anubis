@@ -54,6 +54,10 @@ on the ingress:
 
 - ingress-anubis.jaredallard.github.com/serve-robots-txt (int)
 - ingress-anubis.jaredallard.github.com/difficulty (bool)
+- ingress-anubis.jaredallard.github.com/ingress-class (string)
+  - Set the ingressClassName value for the wrapped ingress. The default
+    is `nginx`. Note that `nginx` is the only officially supported
+    setup right now.
 
 See [anubis environment variable
 documentation](https://anubis.techaro.lol/docs/admin/installation) for

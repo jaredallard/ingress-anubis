@@ -122,7 +122,7 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 		return reconcile.Result{}, err
 	}
 
-	if err := ir.reconcileChildIngress(ctx, origIng, req); err != nil {
+	if err := ir.reconcileChildIngress(ctx, origIng, icfg, req); err != nil {
 		return reconcile.Result{}, err
 	}
 
@@ -264,7 +264,8 @@ func (ir *IngressReconciler) reconcileService(ctx context.Context, req reconcile
 }
 
 // reconcileChildIngress reconciles the child (managed) Ingress
-func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIngress *networkingv1.Ingress, req reconcile.Request) error {
+func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIng *networkingv1.Ingress,
+	icfg *config.IngressConfig, req reconcile.Request) error {
 	ing := &networkingv1.Ingress{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "ia-" + req.Name,
@@ -280,10 +281,14 @@ func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIngr
 	}
 
 	_, err := controllerutil.CreateOrUpdate(ctx, ir.client, ing, func() error {
-		ing.Spec = *origIngress.Spec.DeepCopy()
-		ing.ObjectMeta.Annotations = origIngress.ObjectMeta.DeepCopy().GetAnnotations()
+		ing.Spec = *origIng.Spec.DeepCopy()
+		ing.ObjectMeta.Annotations = origIng.ObjectMeta.DeepCopy().GetAnnotations()
 
-		ing.Spec.IngressClassName = &ir.cfg.WrappedIngressClassName
+		if icfg.IngressClass != nil {
+			ing.Spec.IngressClassName = icfg.IngressClass
+		} else {
+			ing.Spec.IngressClassName = &ir.cfg.WrappedIngressClassName
+		}
 
 		// Ensure our labels are set.
 		if ing.ObjectMeta.Labels == nil {

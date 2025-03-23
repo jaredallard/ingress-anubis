@@ -44,12 +44,16 @@ const (
 	// AnnotationKeyServeRobotsTxt is used by
 	// [IngressConfig.ServeRobotsTxt].
 	AnnotationKeyServeRobotsTxt AnnotationKey = AnnotationKeyBase + "serve-robots-txt"
+
+	// AnnotationKeyIngressClass is used by [IngressConfig.IngressClass].
+	AnnotationKeyIngressClass AnnotationKey = AnnotationKeyBase + "ingress-class"
 )
 
 // AnnotationKeys contains all valid [AnnotationKey] values.
 var AnnotationKeys = [...]AnnotationKey{
 	AnnotationKeyDifficulty,
 	AnnotationKeyServeRobotsTxt,
+	AnnotationKeyIngressClass,
 }
 
 // IngressConfig contains configuration from an ingress object.
@@ -61,6 +65,11 @@ type IngressConfig struct {
 	// ServeRobotsTxt enables serving robots.txt. Enabled by default.
 	// See: https://anubis.techaro.lol/docs/admin/installation
 	ServeRobotsTxt *bool
+
+	// IngressClass denotes which ingress class should be used by the
+	// controller instead of the default. The default comes from
+	// [Config.WrappedIngressClassName].
+	IngressClass *string
 }
 
 // applyDefaults applies defaults to the provided [IngressConfig].
@@ -103,6 +112,8 @@ func GetIngressConfigFromIngress(ing *networkingv1.Ingress) (*IngressConfig, err
 					return nil, fmt.Errorf("failed to parse annotation %s value %q as int", AnnotationKeyDifficulty, v)
 				}
 				cfg.Difficulty = &d
+			case AnnotationKeyIngressClass:
+				cfg.IngressClass = &v
 			default:
 				panic(fmt.Errorf("unknown annotation key %q", string(k)))
 			}

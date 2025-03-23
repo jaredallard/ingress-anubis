@@ -53,6 +53,9 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 		if overrides.ServeRobotsTxt != nil {
 			resp.ServeRobotsTxt = overrides.ServeRobotsTxt
 		}
+		if overrides.IngressClass != nil {
+			resp.IngressClass = overrides.IngressClass
+		}
 		return resp
 	}
 
@@ -80,6 +83,13 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 				AnnotationKeyServeRobotsTxt: "false",
 			})},
 			want: defplus(IngressConfig{ServeRobotsTxt: ptr.To(false)}),
+		},
+		{
+			name: "should support setting IngressClass",
+			args: args{ing(map[AnnotationKey]string{
+				AnnotationKeyIngressClass: "traefik",
+			})},
+			want: defplus(IngressConfig{IngressClass: ptr.To("traefik")}),
 		},
 		{
 			name: "should fail when invalid value is set for key",
