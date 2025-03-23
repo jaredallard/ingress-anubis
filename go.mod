@@ -7,6 +7,7 @@ toolchain go1.24.1
 require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/go-logr/logr v1.4.2
+	github.com/google/go-cmp v0.7.0
 	go.rgst.io/stencil/v2 v2.2.1-0.20250321170522-a3c0ff5167f5
 	k8s.io/api v0.33.0-beta.0
 	k8s.io/apimachinery v0.33.0-beta.0
@@ -36,7 +37,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gnostic-models v0.6.9 // indirect
-	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

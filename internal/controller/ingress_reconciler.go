@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strconv"
 
 	"github.com/jaredallard/ingress-anubis/internal/config"
 	"go.rgst.io/stencil/v2/pkg/slogext"
@@ -108,7 +109,12 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 		return reconcile.Result{}, err
 	}
 
-	if err := ir.reconcileDeployment(ctx, target, req); err != nil {
+	icfg, err := config.GetIngressConfigFromIngress(origIng)
+	if err != nil {
+		return reconcile.Result{}, err
+	}
+
+	if err := ir.reconcileDeployment(ctx, target, icfg, req); err != nil {
 		return reconcile.Result{}, err
 	}
 
@@ -154,7 +160,7 @@ func (ir *IngressReconciler) getTargetFromService(ctx context.Context, ns string
 }
 
 // reconcileDeployment ensures that a deployment of anubis exists
-func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target string, req reconcile.Request) error {
+func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target string, icfg *config.IngressConfig, req reconcile.Request) error {
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "ia-" + req.Name,
@@ -192,9 +198,9 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 					Image: ir.cfg.AnubisImage + ":" + ir.cfg.AnubisVersion,
 					Env: []corev1.EnvVar{
 						{Name: "BIND", Value: ":8080"},
-						{Name: "DIFFICULTY", Value: "4"},
+						{Name: "DIFFICULTY", Value: strconv.Itoa(*icfg.Difficulty)},
 						{Name: "METRICS_BIND", Value: ":9090"},
-						{Name: "SERVE_ROBOTS_TXT", Value: "true"},
+						{Name: "SERVE_ROBOTS_TXT", Value: strconv.FormatBool(*icfg.ServeRobotsTxt)},
 						{Name: "TARGET", Value: target},
 					},
 					ReadinessProbe: &corev1.Probe{

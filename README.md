@@ -47,6 +47,18 @@ For available configuration options, see the `config` key in
 [`config.go`](./internal/config/config.go) until further documentation is
 written.
 
+### Ingress Configuration
+
+Anubis can be configured per-ingress through the following annotations,
+on the ingress:
+
+- ingress-anubis.jaredallard.github.com/serve-robots-txt (int)
+- ingress-anubis.jaredallard.github.com/difficulty (bool)
+
+See [anubis environment variable
+documentation](https://anubis.techaro.lol/docs/admin/installation) for
+more information on these values and what they do.
+
 ## Usage
 
 Once [installed](#installing), simply set `ingressClassName` to `anubis`
