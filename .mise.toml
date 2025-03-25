@@ -4,7 +4,7 @@
 bun = "latest"
 git-cliff = "latest"
 golang = "1.24.1"
-golangci-lint = "1.64.8"
+golangci-lint = "2.0.2"
 "ubi:goreleaser/goreleaser-pro" = { version = "latest", exe = "goreleaser" }
 helm = "3"
 yq = "latest"
