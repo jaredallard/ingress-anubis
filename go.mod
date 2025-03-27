@@ -8,7 +8,7 @@ require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/go-logr/logr v1.4.2
 	github.com/google/go-cmp v0.7.0
-	go.rgst.io/stencil/v2 v2.2.1-0.20250321170522-a3c0ff5167f5
+	go.rgst.io/stencil/v2 v2.3.0
 	k8s.io/api v0.33.0-beta.0
 	k8s.io/apimachinery v0.33.0-beta.0
 	k8s.io/utils v0.0.0-20250321185631-1f6e0b77f77e
