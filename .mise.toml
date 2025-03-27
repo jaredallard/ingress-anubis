@@ -4,14 +4,16 @@
 bun = "latest"
 git-cliff = "latest"
 golang = "1.24.1"
-golangci-lint = "1.64.8"
-"ubi:goreleaser/goreleaser-pro" = { version = "latest", exe = "goreleaser" }
-helm = "3"
-yq = "latest"
-"go:gotest.tools/gotestsum" = "1.12.0"
+golangci-lint = "2.0.2"
+goreleaser = "latest"
+"go:gotest.tools/gotestsum" = "1.12.1"
 "go:golang.org/x/tools/cmd/goimports" = "latest"
 "go:mvdan.cc/sh/v3/cmd/shfmt" = "latest"
 "go:github.com/thenativeweb/get-next-version" = "latest"
+
+"ubi:goreleaser/goreleaser-pro" = { version = "latest", exe = "goreleaser" }
+helm = "3"
+yq = "latest"
 
 [tasks.build]
 description = "Build a binary for the current platform/architecture"

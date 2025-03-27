@@ -1,3 +1,5 @@
+// Package main implements the entrypoint of the ingress-anubis
+// controller.
 package main
 
 import (

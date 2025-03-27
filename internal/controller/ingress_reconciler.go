@@ -258,13 +258,13 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 	_, err := controllerutil.CreateOrUpdate(ctx, ir.client, dep, func() error {
 		// Deployment selector is immutable so we set this value only if
 		// a new object is going to be created
-		if dep.ObjectMeta.CreationTimestamp.IsZero() {
+		if dep.CreationTimestamp.IsZero() {
 			dep.Spec.Selector = &metav1.LabelSelector{
 				MatchLabels: labels,
 			}
 		}
 
-		dep.ObjectMeta.Labels = labels
+		dep.Labels = labels
 
 		// Only one replica is supported by anubis currently
 		dep.Spec.Replicas = ptr.To(int32(1))
@@ -360,7 +360,7 @@ func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIng 
 
 	_, err := controllerutil.CreateOrUpdate(ctx, ir.client, ing, func() error {
 		ing.Spec = *origIng.Spec.DeepCopy()
-		ing.ObjectMeta.Annotations = origIng.ObjectMeta.DeepCopy().GetAnnotations()
+		ing.Annotations = origIng.DeepCopy().GetAnnotations()
 
 		if icfg.IngressClass != nil {
 			ing.Spec.IngressClassName = icfg.IngressClass
@@ -369,11 +369,11 @@ func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIng 
 		}
 
 		// Ensure our labels are set.
-		if ing.ObjectMeta.Labels == nil {
-			ing.ObjectMeta.Labels = make(map[string]string)
+		if ing.Labels == nil {
+			ing.Labels = make(map[string]string)
 		}
 		for k, v := range labels {
-			ing.ObjectMeta.Labels[k] = v
+			ing.Labels[k] = v
 		}
 
 		// Ensure all hosts point to us instead of whatever was originally

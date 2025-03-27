@@ -1,14 +1,7 @@
-# yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 version: 2
 project_name: ingress-anubis
 report_sizes: true
-before:
-  hooks:
-    - cmd: go mod download
-after:
-  hooks:
-    - cmd: ./scripts/publish-helm.sh {{ .Version }}
-      if: "{{ not .IsSnapshot }}"
 metadata:
   mod_timestamp: "{{ .CommitTimestamp }}"
 builds:
@@ -88,4 +81,5 @@ release:
     **Full Changelog**: https://github.com/jaredallard/ingress-anubis/compare/{{ .PreviousTag }}...{{ .Tag }}
 
 ## <<Stencil::Block(extraReleaseOpts)>>
+
 ## <</Stencil::Block>>
