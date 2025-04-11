@@ -47,6 +47,9 @@ const (
 
 	// AnnotationKeyIngressClass is used by [IngressConfig.IngressClass].
 	AnnotationKeyIngressClass AnnotationKey = AnnotationKeyBase + "ingress-class"
+
+	// AnnotationKeyIngressClass is used by [IngressConfig.OGPassthrough].
+	AnnotationKeyOGPassthrough AnnotationKey = AnnotationKeyBase + "og-passthrough"
 )
 
 // AnnotationKeys contains all valid [AnnotationKey] values.
@@ -54,6 +57,7 @@ var AnnotationKeys = [...]AnnotationKey{
 	AnnotationKeyDifficulty,
 	AnnotationKeyServeRobotsTxt,
 	AnnotationKeyIngressClass,
+	AnnotationKeyOGPassthrough,
 }
 
 // IngressConfig contains configuration from an ingress object.
@@ -70,6 +74,10 @@ type IngressConfig struct {
 	// controller instead of the default. The default comes from
 	// [Config.WrappedIngressClassName].
 	IngressClass *string
+
+	// OGPassthrough enables passthrough of opengraph tags. Enabled by
+	// default.
+	OGPassthrough *bool
 }
 
 // applyDefaults applies defaults to the provided [IngressConfig].
@@ -80,6 +88,10 @@ func applyDefaults(ic *IngressConfig) {
 
 	if ic.ServeRobotsTxt == nil {
 		ic.ServeRobotsTxt = ptr.To(true)
+	}
+
+	if ic.OGPassthrough == nil {
+		ic.OGPassthrough = ptr.To(true)
 	}
 }
 
@@ -114,6 +126,12 @@ func GetIngressConfigFromIngress(ing *networkingv1.Ingress) (*IngressConfig, err
 				cfg.Difficulty = &d
 			case AnnotationKeyIngressClass:
 				cfg.IngressClass = &v
+			case AnnotationKeyOGPassthrough:
+				b, err := strconv.ParseBool(v)
+				if err != nil {
+					return nil, fmt.Errorf("failed to parse annotation %s value %q as bool", AnnotationKeyOGPassthrough, v)
+				}
+				cfg.OGPassthrough = &b
 			default:
 				panic(fmt.Errorf("unknown annotation key %q", string(k)))
 			}

@@ -50,8 +50,9 @@ written.
 Anubis can be configured per-ingress through the following annotations,
 on the ingress:
 
-- ingress-anubis.jaredallard.github.com/serve-robots-txt (int)
-- ingress-anubis.jaredallard.github.com/difficulty (bool)
+- ingress-anubis.jaredallard.github.com/serve-robots-txt (bool)
+- ingress-anubis.jaredallard.github.com/og-passthrough (bool)
+- ingress-anubis.jaredallard.github.com/difficulty (int)
 - ingress-anubis.jaredallard.github.com/ingress-class (string)
   - Set the ingressClassName value for the wrapped ingress. The default
     is `nginx`. Note that `nginx` is the only officially supported

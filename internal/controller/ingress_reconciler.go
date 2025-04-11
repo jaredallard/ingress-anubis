@@ -282,6 +282,7 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 						{Name: "METRICS_BIND", Value: ":9090"},
 						{Name: "SERVE_ROBOTS_TXT", Value: strconv.FormatBool(*icfg.ServeRobotsTxt)},
 						{Name: "TARGET", Value: target},
+						{Name: "OG_PASSTHROUGH", Value: strconv.FormatBool(*icfg.OGPassthrough)},
 					},
 					ReadinessProbe: &corev1.Probe{
 						FailureThreshold: 3,
