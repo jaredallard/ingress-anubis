@@ -73,7 +73,7 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 	}
 
 	// Not controlled by us.
-	if origIng.Spec.IngressClassName == nil || *origIng.Spec.IngressClassName != "anubis" {
+	if origIng.Spec.IngressClassName == nil || *origIng.Spec.IngressClassName != ir.cfg.IngressClassName {
 		return reconcile.Result{}, nil
 	}
 

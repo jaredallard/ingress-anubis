@@ -35,6 +35,10 @@ type Config struct {
 	// comes from [Config.AnubisVersion].
 	AnubisImage string `env:"ANUBIS_IMAGE" envDefault:"ghcr.io/techarohq/anubis"`
 
+	// IngressClassName is the ingress class name that Anubis itself
+	// should use.
+	IngressClassName string `env:"INGRESS_CLASS_NAME" envDefault:"anubis"`
+
 	// WrappedIngressClassName is the name of the ingressClass to use for
 	// the ingress managed by anubis. While this is configurable, only
 	// nginx has been tested (though, in theory, any should work).

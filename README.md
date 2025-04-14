@@ -62,6 +62,14 @@ See [anubis environment variable
 documentation](https://anubis.techaro.lol/docs/admin/installation) for
 more information on these values and what they do.
 
+### Multiple Instances
+
+Multiple instances of ingress-anubis can be ran under **different**
+ingress class names, by setting `INGRESS_CLASS_NAME` (see
+[Configuration](#configuration) for how to set this).
+
+However, note that they must be ran in different namespaces as well.
+
 ## Usage
 
 Once [installed](#installing), simply set `ingressClassName` to `anubis`
