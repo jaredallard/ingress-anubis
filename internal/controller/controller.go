@@ -28,7 +28,7 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
-	"sigs.k8s.io/controller-runtime/pkg/log"
+	crlog "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // KubernetesService contains all of the setup and logic for the
@@ -45,7 +45,7 @@ func NewKubernetesService(cfg *config.Config, log slogext.Logger) *KubernetesSer
 
 // Run starts the kubernetes controller(s)
 func (s *KubernetesService) Run(ctx context.Context) error {
-	log.SetLogger(logr.FromSlogHandler(s.log.GetHandler()))
+	crlog.SetLogger(logr.FromSlogHandler(s.log.GetHandler()))
 
 	opts := ctrl.Options{
 		Logger: logr.FromSlogHandler(s.log.GetHandler()),
