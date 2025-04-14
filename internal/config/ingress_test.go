@@ -56,6 +56,9 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 		if overrides.IngressClass != nil {
 			resp.IngressClass = overrides.IngressClass
 		}
+		if overrides.OGPassthrough != nil {
+			resp.OGPassthrough = overrides.OGPassthrough
+		}
 		return resp
 	}
 
@@ -90,6 +93,13 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 				AnnotationKeyIngressClass: "traefik",
 			})},
 			want: defplus(IngressConfig{IngressClass: ptr.To("traefik")}),
+		},
+		{
+			name: "should support setting OGPassthrough",
+			args: args{ing(map[AnnotationKey]string{
+				AnnotationKeyOGPassthrough: "false",
+			})},
+			want: defplus(IngressConfig{OGPassthrough: ptr.To(false)}),
 		},
 		{
 			name: "should fail when invalid value is set for key",
