@@ -59,6 +59,9 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 		if overrides.OGPassthrough != nil {
 			resp.OGPassthrough = overrides.OGPassthrough
 		}
+		if overrides.MetricsPort != nil {
+			resp.MetricsPort = overrides.MetricsPort
+		}
 		return resp
 	}
 
@@ -100,6 +103,13 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 				AnnotationKeyOGPassthrough: "false",
 			})},
 			want: defplus(IngressConfig{OGPassthrough: ptr.To(false)}),
+		},
+		{
+			name: "should support setting MetricsPort",
+			args: args{ing(map[AnnotationKey]string{
+				AnnotationKeyMetricsPort: "9091",
+			})},
+			want: defplus(IngressConfig{MetricsPort: ptr.To(uint32(9091))}),
 		},
 		{
 			name: "should fail when invalid value is set for key",

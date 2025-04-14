@@ -271,7 +271,7 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 		dep.Spec.Strategy = appsv1.DeploymentStrategy{Type: appsv1.RecreateDeploymentStrategyType}
 
 		dep.Spec.Template = corev1.PodTemplateSpec{
-			ObjectMeta: metav1.ObjectMeta{Labels: labels},
+			ObjectMeta: metav1.ObjectMeta{Labels: labels, Annotations: ir.cfg.Annotations},
 			Spec: corev1.PodSpec{
 				Containers: []corev1.Container{{
 					Name:  "main",
@@ -279,7 +279,7 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 					Env: []corev1.EnvVar{
 						{Name: "BIND", Value: ":8080"},
 						{Name: "DIFFICULTY", Value: strconv.Itoa(*icfg.Difficulty)},
-						{Name: "METRICS_BIND", Value: ":9090"},
+						{Name: "METRICS_BIND", Value: ":" + strconv.Itoa(int(*icfg.MetricsPort))},
 						{Name: "SERVE_ROBOTS_TXT", Value: strconv.FormatBool(*icfg.ServeRobotsTxt)},
 						{Name: "TARGET", Value: target},
 						{Name: "OG_PASSTHROUGH", Value: strconv.FormatBool(*icfg.OGPassthrough)},
@@ -288,7 +288,7 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 						FailureThreshold: 3,
 						ProbeHandler: corev1.ProbeHandler{
 							HTTPGet: &corev1.HTTPGetAction{
-								Port: intstr.FromInt32(9090),
+								Port: intstr.FromInt32(int32(*icfg.MetricsPort)),
 								Path: "/metrics",
 							},
 						},

@@ -43,6 +43,12 @@ type Config struct {
 	// LeaderElection enables or disables leader election. This should
 	// usually always be on.
 	LeaderElection bool `env:"LEADER_ELECTION" envDefault:"true"`
+
+	// Annotations is a map of annotations to set on the managed Anubis
+	// pod. Example:
+	//
+	// ANNOTATIONS="prometheus.io/scrape:true,hello.world/a-thing:1"
+	Annotations map[string]string `env:"ANNOTATIONS"`
 }
 
 // Load returns a configuration object from the environment.

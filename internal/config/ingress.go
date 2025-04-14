@@ -50,6 +50,9 @@ const (
 
 	// AnnotationKeyIngressClass is used by [IngressConfig.OGPassthrough].
 	AnnotationKeyOGPassthrough AnnotationKey = AnnotationKeyBase + "og-passthrough"
+
+	// AnnotationKeyMetricsPortis used by [IngressConfig.MetricsPort]
+	AnnotationKeyMetricsPort AnnotationKey = AnnotationKeyBase + "metrics-port"
 )
 
 // AnnotationKeys contains all valid [AnnotationKey] values.
@@ -58,6 +61,7 @@ var AnnotationKeys = [...]AnnotationKey{
 	AnnotationKeyServeRobotsTxt,
 	AnnotationKeyIngressClass,
 	AnnotationKeyOGPassthrough,
+	AnnotationKeyMetricsPort,
 }
 
 // IngressConfig contains configuration from an ingress object.
@@ -78,6 +82,10 @@ type IngressConfig struct {
 	// OGPassthrough enables passthrough of opengraph tags. Enabled by
 	// default.
 	OGPassthrough *bool
+
+	// MetricsPort is the port for Prometheus metrics to be exposed on.
+	// Defaults to 9090.
+	MetricsPort *uint32
 }
 
 // applyDefaults applies defaults to the provided [IngressConfig].
@@ -92,6 +100,10 @@ func applyDefaults(ic *IngressConfig) {
 
 	if ic.OGPassthrough == nil {
 		ic.OGPassthrough = ptr.To(true)
+	}
+
+	if ic.MetricsPort == nil {
+		ic.MetricsPort = ptr.To(uint32(9090))
 	}
 }
 
@@ -132,6 +144,12 @@ func GetIngressConfigFromIngress(ing *networkingv1.Ingress) (*IngressConfig, err
 					return nil, fmt.Errorf("failed to parse annotation %s value %q as bool", AnnotationKeyOGPassthrough, v)
 				}
 				cfg.OGPassthrough = &b
+			case AnnotationKeyMetricsPort:
+				mp, err := strconv.Atoi(v)
+				if err != nil {
+					return nil, fmt.Errorf("failed to parse annotation %s value %q as int", AnnotationKeyMetricsPort, v)
+				}
+				cfg.MetricsPort = ptr.To(uint32(mp))
 			default:
 				panic(fmt.Errorf("unknown annotation key %q", string(k)))
 			}
