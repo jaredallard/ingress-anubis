@@ -149,6 +149,7 @@ func GetIngressConfigFromIngress(ing *networkingv1.Ingress) (*IngressConfig, err
 				if err != nil {
 					return nil, fmt.Errorf("failed to parse annotation %s value %q as int", AnnotationKeyMetricsPort, v)
 				}
+				//nolint:gosec // Why: Acceptable overflow case.
 				cfg.MetricsPort = ptr.To(uint32(mp))
 			default:
 				panic(fmt.Errorf("unknown annotation key %q", string(k)))

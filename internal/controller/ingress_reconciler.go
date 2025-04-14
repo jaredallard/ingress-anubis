@@ -288,6 +288,7 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 						FailureThreshold: 3,
 						ProbeHandler: corev1.ProbeHandler{
 							HTTPGet: &corev1.HTTPGetAction{
+								//nolint:gosec // Why: Not a possible overflow.
 								Port: intstr.FromInt32(int32(*icfg.MetricsPort)),
 								Path: "/metrics",
 							},
