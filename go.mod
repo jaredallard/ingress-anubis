@@ -9,8 +9,8 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/google/go-cmp v0.7.0
 	go.rgst.io/stencil/v2 v2.3.1
-	k8s.io/api v0.33.0-rc.0
-	k8s.io/apimachinery v0.33.0-rc.0
+	k8s.io/api v0.33.0-rc.1
+	k8s.io/apimachinery v0.33.0-rc.1
 	k8s.io/utils v0.0.0-20250321185631-1f6e0b77f77e
 	sigs.k8s.io/controller-runtime v0.20.4
 )
