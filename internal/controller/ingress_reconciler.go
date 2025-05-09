@@ -296,6 +296,7 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 					},
 					Ports: []corev1.ContainerPort{
 						{Name: "http", ContainerPort: 8080},
+						//nolint:gosec // Why: Not a possible overflow.
 						{Name: "http-metrics", ContainerPort: int32(*icfg.MetricsPort)},
 					},
 					SecurityContext: &corev1.SecurityContext{
