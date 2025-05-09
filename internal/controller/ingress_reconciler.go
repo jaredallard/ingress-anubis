@@ -294,7 +294,10 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 							},
 						},
 					},
-					Ports: []corev1.ContainerPort{{Name: "http", ContainerPort: 8080}},
+					Ports: []corev1.ContainerPort{
+						{Name: "http", ContainerPort: 8080},
+						{Name: "http-metrics", ContainerPort: int32(*icfg.MetricsPort)}
+					},
 					SecurityContext: &corev1.SecurityContext{
 						AllowPrivilegeEscalation: ptr.To(false),
 						RunAsUser:                ptr.To(int64(1000)),
