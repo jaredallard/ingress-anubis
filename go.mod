@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/caarlos0/env/v11 v11.3.1
-	github.com/go-logr/logr v1.4.2
+	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
 	go.rgst.io/stencil/v2 v2.4.0
 	k8s.io/api v0.33.1
