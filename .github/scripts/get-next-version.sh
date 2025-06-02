@@ -25,7 +25,7 @@ if [[ -n "$VERSION_OVERRIDE" ]]; then
 fi
 
 # Determine the next version as reported by the next-version command.
-next_version=$(get-next-version --prefix v 2>/dev/null | sed 's/-rc.*//' | tr -d '\n')
+next_version=$(svu next 2>/dev/null | sed 's/-rc.*//' | tr -d '\n')
 
 echo "Next release version: $next_version" >&2
 
