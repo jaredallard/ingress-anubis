@@ -133,6 +133,8 @@ github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.rgst.io/stencil/v2 v2.5.0 h1:mTUoVsWSyPlzy/1WvH00SapYCpmnOO7m5C8RiTQ5W8g=
 go.rgst.io/stencil/v2 v2.5.0/go.mod h1:qQv1CZWR2M3g9yvR3qVNT8j/bPPI0BRz3o6lckW5oXo=
+go.rgst.io/stencil/v2 v2.5.1 h1:Dd/jgq6mAkIkyBjBRuVvGE0H6orhOKFFmLilKMXikEw=
+go.rgst.io/stencil/v2 v2.5.1/go.mod h1:qQv1CZWR2M3g9yvR3qVNT8j/bPPI0BRz3o6lckW5oXo=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/goleak v1.3.0/go.mod h1:CoHD4mav9JJNrW/WLlf7HGZPjdw8EucARQHekz1X6bE=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
