@@ -62,6 +62,12 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 		if overrides.MetricsPort != nil {
 			resp.MetricsPort = overrides.MetricsPort
 		}
+		if overrides.EnvFromCM != nil {
+			resp.EnvFromCM = overrides.EnvFromCM
+		}
+		if overrides.EnvFromSec != nil {
+			resp.EnvFromSec = overrides.EnvFromSec
+		}
 		return resp
 	}
 
@@ -77,7 +83,7 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 			want: getDefaults(),
 		},
 		{
-			name: "should support setting difficulty",
+			name: "should support setting Difficulty",
 			args: args{ing(map[AnnotationKey]string{
 				AnnotationKeyDifficulty: "5",
 			})},
@@ -110,6 +116,24 @@ func TestGetIngressConfigFromIngress(t *testing.T) {
 				AnnotationKeyMetricsPort: "9091",
 			})},
 			want: defplus(IngressConfig{MetricsPort: ptr.To(uint32(9091))}),
+		},
+		{
+			name: "should support setting EnvFromCM",
+			args: args{ing(map[AnnotationKey]string{
+				AnnotationKeyEnvFromCM: "hello-world",
+			})},
+			want: defplus(IngressConfig{
+				EnvFromCM: ptr.To("hello-world"),
+			}),
+		},
+		{
+			name: "should support setting EnvFromSec",
+			args: args{ing(map[AnnotationKey]string{
+				AnnotationKeyEnvFromSec: "hello-world",
+			})},
+			want: defplus(IngressConfig{
+				EnvFromSec: ptr.To("hello-world"),
+			}),
 		},
 		{
 			name: "should fail when invalid value is set for key",

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mise description="Creates a CHANGELOG.md file for the current git tag"
+#MISE description="Creates a CHANGELOG.md file for the current git tag"
 set -euo pipefail
 
 # Get the current tag that we're on.

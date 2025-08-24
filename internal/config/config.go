@@ -53,6 +53,17 @@ type Config struct {
 	//
 	// ANNOTATIONS="prometheus.io/scrape:true,hello.world/a-thing:1"
 	Annotations map[string]string `env:"ANNOTATIONS"`
+
+	// EnvironmentVariables is a map of environment variables to set on
+	// the manages Anubis pod. See [Annotations] for an example of the
+	// expected format.
+	EnvironmentVariables map[string]string `env:"ENVIRONMENT_VARIABLES"`
+
+	// EnvFromCM is a global version of IngressConfig.EnvFromCM
+	EnvFromCM string `env:"ENV_FROM_CM"`
+
+	// EnvFromSec is a global version of IngressConfig.EnvFromSec
+	EnvFromSec string `env:"ENV_FROM_SEC"`
 }
 
 // Load returns a configuration object from the environment.

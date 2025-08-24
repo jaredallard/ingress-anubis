@@ -51,8 +51,14 @@ const (
 	// AnnotationKeyIngressClass is used by [IngressConfig.OGPassthrough].
 	AnnotationKeyOGPassthrough AnnotationKey = AnnotationKeyBase + "og-passthrough"
 
-	// AnnotationKeyMetricsPortis used by [IngressConfig.MetricsPort]
+	// AnnotationKeyMetricsPortis is used by [IngressConfig.MetricsPort]
 	AnnotationKeyMetricsPort AnnotationKey = AnnotationKeyBase + "metrics-port"
+
+	// AnnotationKeyEnvFromCM is used by [IngressConfig.EnvFromCM]
+	AnnotationKeyEnvFromCM AnnotationKey = AnnotationKeyBase + "env-from-cm"
+
+	// AnnotationKeyEnvFromSec is used by [IngressConfig.EnvFromSec]
+	AnnotationKeyEnvFromSec AnnotationKey = AnnotationKeyBase + "env-from-sec"
 )
 
 // AnnotationKeys contains all valid [AnnotationKey] values.
@@ -62,6 +68,8 @@ var AnnotationKeys = [...]AnnotationKey{
 	AnnotationKeyIngressClass,
 	AnnotationKeyOGPassthrough,
 	AnnotationKeyMetricsPort,
+	AnnotationKeyEnvFromCM,
+	AnnotationKeyEnvFromSec,
 }
 
 // IngressConfig contains configuration from an ingress object.
@@ -86,6 +94,15 @@ type IngressConfig struct {
 	// MetricsPort is the port for Prometheus metrics to be exposed on.
 	// Defaults to 9090.
 	MetricsPort *uint32
+
+	// EnvFromCM is the name of a configmap in the same namespace as the
+	// controller to mount to the created anubis pods as environment
+	// variables. This is functionally the same as setting `EnvFrom` on
+	// the created pod
+	EnvFromCM *string
+
+	// EnvFromSec is the same as [EnvFromCM], but with a secret instead.
+	EnvFromSec *string
 }
 
 // applyDefaults applies defaults to the provided [IngressConfig].
@@ -151,6 +168,10 @@ func GetIngressConfigFromIngress(ing *networkingv1.Ingress) (*IngressConfig, err
 				}
 				//nolint:gosec // Why: Acceptable overflow case.
 				cfg.MetricsPort = ptr.To(uint32(mp))
+			case AnnotationKeyEnvFromCM:
+				cfg.EnvFromCM = &v
+			case AnnotationKeyEnvFromSec:
+				cfg.EnvFromSec = &v
 			default:
 				panic(fmt.Errorf("unknown annotation key %q", string(k)))
 			}

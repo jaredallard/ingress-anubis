@@ -21,6 +21,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"maps"
 	"slices"
 	"strconv"
 
@@ -238,6 +239,54 @@ func (ir *IngressReconciler) getTargetFromService(ctx context.Context, ns string
 	return fmt.Sprintf("http://%s.%s.svc.cluster.local:%d", isb.Name, ns, port), nil
 }
 
+// getEnvFrom returns an EnvFrom block for the current ingress
+// configuration
+func (ir *IngressReconciler) getEnvFrom(icfg *config.IngressConfig) []corev1.EnvFromSource {
+	envFrom := make([]corev1.EnvFromSource, 0)
+
+	if ir.cfg.EnvFromCM != "" {
+		envFrom = append(envFrom, corev1.EnvFromSource{
+			ConfigMapRef: &corev1.ConfigMapEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: ir.cfg.EnvFromCM,
+				},
+			},
+		})
+	}
+
+	if ir.cfg.EnvFromSec != "" {
+		envFrom = append(envFrom, corev1.EnvFromSource{
+			SecretRef: &corev1.SecretEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: ir.cfg.EnvFromSec,
+				},
+			},
+		})
+	}
+
+	if icfg.EnvFromCM != nil {
+		envFrom = append(envFrom, corev1.EnvFromSource{
+			ConfigMapRef: &corev1.ConfigMapEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: *icfg.EnvFromCM,
+				},
+			},
+		})
+	}
+
+	if icfg.EnvFromSec != nil {
+		envFrom = append(envFrom, corev1.EnvFromSource{
+			SecretRef: &corev1.SecretEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: *icfg.EnvFromSec,
+				},
+			},
+		})
+	}
+
+	return envFrom
+}
+
 // reconcileDeployment ensures that a deployment of anubis exists
 func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target string,
 	icfg *config.IngressConfig, req reconcile.Request) error {
@@ -270,20 +319,32 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 		dep.Spec.Replicas = ptr.To(int32(1))
 		dep.Spec.Strategy = appsv1.DeploymentStrategy{Type: appsv1.RecreateDeploymentStrategyType}
 
+		envVars := maps.Clone(ir.cfg.EnvironmentVariables)
+
+		// We override/set a few values controlled by us but also that have
+		// their own annotation configuration values.
+		envVars["BIND"] = ":8080"
+		envVars["DIFFICULTY"] = strconv.Itoa(*icfg.Difficulty)
+		envVars["METRICS_BIND"] = ":" + strconv.Itoa(int(*icfg.MetricsPort))
+		envVars["SERVE_ROBOTS_TXT"] = strconv.FormatBool(*icfg.ServeRobotsTxt)
+		envVars["TARGET"] = target
+		envVars["OG_PASSTHROUGH"] = strconv.FormatBool(*icfg.OGPassthrough)
+
+		cEnvVars := make([]corev1.EnvVar, 0, len(envVars))
+		for k, v := range envVars {
+			cEnvVars = append(cEnvVars, corev1.EnvVar{
+				Name:  k,
+				Value: v,
+			})
+		}
+
 		dep.Spec.Template = corev1.PodTemplateSpec{
 			ObjectMeta: metav1.ObjectMeta{Labels: labels, Annotations: ir.cfg.Annotations},
 			Spec: corev1.PodSpec{
 				Containers: []corev1.Container{{
 					Name:  "main",
 					Image: ir.cfg.AnubisImage + ":" + ir.cfg.AnubisVersion,
-					Env: []corev1.EnvVar{
-						{Name: "BIND", Value: ":8080"},
-						{Name: "DIFFICULTY", Value: strconv.Itoa(*icfg.Difficulty)},
-						{Name: "METRICS_BIND", Value: ":" + strconv.Itoa(int(*icfg.MetricsPort))},
-						{Name: "SERVE_ROBOTS_TXT", Value: strconv.FormatBool(*icfg.ServeRobotsTxt)},
-						{Name: "TARGET", Value: target},
-						{Name: "OG_PASSTHROUGH", Value: strconv.FormatBool(*icfg.OGPassthrough)},
-					},
+					Env:   cEnvVars,
 					ReadinessProbe: &corev1.Probe{
 						FailureThreshold: 3,
 						ProbeHandler: corev1.ProbeHandler{
@@ -294,6 +355,7 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 							},
 						},
 					},
+					EnvFrom: ir.getEnvFrom(icfg),
 					Ports: []corev1.ContainerPort{
 						{Name: "http", ContainerPort: 8080},
 						//nolint:gosec // Why: Not a possible overflow.
