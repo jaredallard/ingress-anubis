@@ -24,6 +24,7 @@ import (
 	"maps"
 	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/jaredallard/ingress-anubis/internal/config"
 	"go.rgst.io/stencil/v2/pkg/slogext"
@@ -60,6 +61,39 @@ type IngressReconciler struct {
 	client crclient.Client
 }
 
+// mirrorStatus mirrors the status from a managed ingress to the owning
+// ingressClass'd ingress
+func (ir *IngressReconciler) mirrorStatus(ctx context.Context, ing *networkingv1.Ingress) (reconcile.Result, error) {
+	targetIngKey, ok := ing.Labels[OwningLabel]
+	if !ok {
+		return reconcile.Result{}, nil
+	}
+
+	// TODO(jaredallard): This probably will break on any namespaces that
+	// have '--' in the name.
+	spl := strings.Split(targetIngKey, "--")
+	if len(spl) != 2 {
+		return reconcile.Result{},
+			fmt.Errorf("failed to determine owner from owning label value %q", targetIngKey)
+	}
+
+	owningIng := &networkingv1.Ingress{}
+	if err := ir.client.Get(ctx, crclient.ObjectKey{
+		Namespace: spl[0],
+		Name:      spl[1],
+	}, owningIng); err != nil {
+		return reconcile.Result{}, crclient.IgnoreNotFound(err)
+	}
+
+	patch := crclient.StrategicMergeFrom(owningIng.DeepCopy())
+	owningIng.Status = ing.Status
+	if err := ir.client.Status().Patch(ctx, owningIng, patch); err != nil {
+		return reconcile.Result{}, fmt.Errorf("failed to update status: %w", err)
+	}
+
+	return reconcile.Result{}, nil
+}
+
 // Reconcile contains the main logic for reconciling all of the
 // resources that make up the ingress controller. The following logic is
 // documented below:
@@ -74,8 +108,13 @@ func (ir *IngressReconciler) Reconcile(ctx context.Context, req reconcile.Reques
 		return reconcile.Result{}, crclient.IgnoreNotFound(err)
 	}
 
-	// Not controlled by us.
+	// Not controlled by us, only check to see if its a managed ingress
+	// which we do want to handle for status mirroring purposes.
 	if origIng.Spec.IngressClassName == nil || *origIng.Spec.IngressClassName != ir.cfg.IngressClassName {
+		if origIng.Labels[ManagedLabel] == "true" {
+			return ir.mirrorStatus(ctx, origIng)
+		}
+
 		return reconcile.Result{}, nil
 	}
 
@@ -341,6 +380,9 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 		dep.Spec.Strategy = appsv1.DeploymentStrategy{Type: appsv1.RecreateDeploymentStrategyType}
 
 		envVars := maps.Clone(ir.cfg.EnvironmentVariables)
+		if envVars == nil {
+			envVars = make(map[string]string)
+		}
 
 		// We override/set a few values controlled by us but also that have
 		// their own annotation configuration values.
@@ -465,9 +507,7 @@ func (ir *IngressReconciler) reconcileChildIngress(ctx context.Context, origIng 
 		if ing.Labels == nil {
 			ing.Labels = make(map[string]string)
 		}
-		for k, v := range labels {
-			ing.Labels[k] = v
-		}
+		maps.Insert(ing.Labels, maps.All(labels))
 
 		// Ensure all hosts point to us instead of whatever was originally
 		// set.
