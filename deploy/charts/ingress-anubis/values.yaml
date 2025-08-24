@@ -25,6 +25,8 @@ config:
   INGRESS_CLASS_NAME: ""
   # See ANNOTATIONS for format.
   ENVIRONMENT_VARIABLES: ""
+  ENV_FROM_CM: ""
+  ENV_FROM_SEC: ""
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
