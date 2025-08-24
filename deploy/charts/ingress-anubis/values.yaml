@@ -101,6 +101,12 @@ volumeMounts: []
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
+# Same as [volumes], but for the managed anubis pods
+anubisVolumes: []
+
+# Same as [volumeMounts], but for the managed anubis pods
+anubisVolumeMounts: []
+
 nodeSelector: {}
 
 tolerations: []

@@ -47,8 +47,8 @@ written.
 
 ### Ingress Configuration
 
-Anubis can be configured per-ingress through the following annotations,
-on the ingress:
+Anubis can also be configured per-ingress through the following
+annotations on the ingress:
 
 - ingress-anubis.jaredallard.github.com/serve-robots-txt (bool)
 - ingress-anubis.jaredallard.github.com/og-passthrough (bool)
@@ -57,6 +57,8 @@ on the ingress:
   - Set the ingressClassName value for the wrapped ingress. The default
     is `nginx`. Note that `nginx` is the only officially supported
     setup right now.
+- ingress-anubis.jaredallard.github.com/env-from-cm (string)
+- ingress-anubis.jaredallard.github.com/env-from-sec (string)
 
 See [anubis environment variable
 documentation](https://anubis.techaro.lol/docs/admin/installation) for

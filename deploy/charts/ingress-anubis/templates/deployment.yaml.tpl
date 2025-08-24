@@ -51,6 +51,14 @@ spec:
               value: {{ $val | squote }}
             {{- end }}
           {{- end }}
+            {{- with .Values.anubisVolumes }}
+            - name: VOLUMES
+              value: {{ toJson . | squote }}
+            {{- end }}
+            {{- with .Values.anubisVolumeMounts }}
+            - name: VOLUME_MOUNTS
+              value: {{ toJson . | squote }}
+            {{- end }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

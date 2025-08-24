@@ -64,6 +64,14 @@ type Config struct {
 
 	// EnvFromSec is a global version of IngressConfig.EnvFromSec
 	EnvFromSec string `env:"ENV_FROM_SEC"`
+
+	// Volumes is JSON representation of the associated Kubernetes
+	// field applied to the created anubis instances.
+	Volumes string `env:"VOLUMES"`
+
+	// VolumeMounts is JSON representation of the associated Kubernetes
+	// field applied to the created anubis instances.
+	VolumeMounts string `env:"VOLUME_MOUNTS"`
 }
 
 // Load returns a configuration object from the environment.

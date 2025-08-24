@@ -32,6 +32,7 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/utils/ptr"
 
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -287,6 +288,26 @@ func (ir *IngressReconciler) getEnvFrom(icfg *config.IngressConfig) []corev1.Env
 	return envFrom
 }
 
+// getVolumeMounts returns the volume mounts for this instance
+func (ir *IngressReconciler) getVolumeMounts() []corev1.VolumeMount {
+	var r []corev1.VolumeMount
+
+	//nolint:errcheck // Why: Best effort
+	_ = json.Unmarshal([]byte(ir.cfg.VolumeMounts), &r)
+
+	return r
+}
+
+// getVolumes returns the volumes for this instance
+func (ir *IngressReconciler) getVolumes() []corev1.Volume {
+	var r []corev1.Volume
+
+	//nolint:errcheck // Why: Best effort
+	_ = json.Unmarshal([]byte(ir.cfg.Volumes), &r)
+
+	return r
+}
+
 // reconcileDeployment ensures that a deployment of anubis exists
 func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target string,
 	icfg *config.IngressConfig, req reconcile.Request) error {
@@ -361,15 +382,18 @@ func (ir *IngressReconciler) reconcileDeployment(ctx context.Context, target str
 						//nolint:gosec // Why: Not a possible overflow.
 						{Name: "http-metrics", ContainerPort: int32(*icfg.MetricsPort)},
 					},
+					VolumeMounts: ir.getVolumeMounts(),
 					SecurityContext: &corev1.SecurityContext{
 						AllowPrivilegeEscalation: ptr.To(false),
 						RunAsUser:                ptr.To(int64(1000)),
 						RunAsGroup:               ptr.To(int64(1000)),
 						RunAsNonRoot:             ptr.To(true),
+						ReadOnlyRootFilesystem:   ptr.To(true),
 						Capabilities:             &corev1.Capabilities{Drop: []corev1.Capability{"ALL"}},
 						SeccompProfile:           &corev1.SeccompProfile{Type: corev1.SeccompProfileTypeRuntimeDefault},
 					},
 				}},
+				Volumes: ir.getVolumes(),
 			},
 		}
 
