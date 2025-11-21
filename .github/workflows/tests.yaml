@@ -17,7 +17,7 @@ jobs:
     name: go test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: jdx/mise-action@v3
         with:
           experimental: true
@@ -54,7 +54,7 @@ jobs:
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: jdx/mise-action@v3
         with:
           experimental: true
