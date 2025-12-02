@@ -3,7 +3,7 @@
 [tools]
 bun = "latest"
 git-cliff = "latest"
-golang = "1.25.4"
+golang = "1.25.5"
 golangci-lint = "2.6.2"
 goreleaser = "latest"
 "go:gotest.tools/gotestsum" = "1.13.0"
