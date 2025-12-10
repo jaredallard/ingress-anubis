@@ -69,7 +69,7 @@ jobs:
       - name: Set up git user
         uses: fregante/setup-git-user@v2
       - name: Download syft (SBOM)
-        uses: anchore/sbom-action/download-syft@v0.20.10
+        uses: anchore/sbom-action/download-syft@v0.20.11
 
       # Bumping logic
       - name: Get next version
