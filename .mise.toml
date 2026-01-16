@@ -4,7 +4,7 @@
 bun = "latest"
 git-cliff = "latest"
 golang = "1.25.6"
-golangci-lint = "2.7.2"
+golangci-lint = "2.8.0"
 goreleaser = "latest"
 "go:gotest.tools/gotestsum" = "1.13.0"
 "go:golang.org/x/tools/cmd/goimports" = "latest"
