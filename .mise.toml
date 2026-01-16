@@ -12,7 +12,7 @@ goreleaser = "latest"
 "go:github.com/caarlos0/svu" = "latest"
 
 "ubi:goreleaser/goreleaser-pro" = { version = "latest", exe = "goreleaser" }
-helm = "4.0.4"
+helm = "4.0.5"
 yq = "latest"
 
 [tasks.build]
