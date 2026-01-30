@@ -47,7 +47,7 @@ rules:
     resources: ["deployments"]
     verbs: ["list", "watch"]
   - apiGroups: ["extensions", "networking.k8s.io"]
-    resources: ["ingresses"]
+    resources: ["ingresses", "ingresses/status"]
     verbs: ["get", "list", "watch", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
