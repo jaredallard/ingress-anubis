@@ -86,7 +86,7 @@ jobs:
         run: |-
           mise run changelog-release
       - name: Create release artifacts and Github Release
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           distribution: goreleaser-pro
           version: v${{ steps.goreleaser.outputs.version }}
