@@ -15,6 +15,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+// Package main implements ingress-anubis.
 package main
 
 import (
