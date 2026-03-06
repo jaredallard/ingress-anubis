@@ -1,14 +1,7 @@
-# yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 version: 2
 project_name: ingress-anubis
 report_sizes: true
-before:
-  hooks:
-    - cmd: go mod download
-after:
-  hooks:
-    - cmd: ./scripts/publish-helm.sh {{ .Version }}
-      if: "{{ not .IsSnapshot }}"
 metadata:
   mod_timestamp: "{{ .CommitTimestamp }}"
 builds:
@@ -40,42 +33,23 @@ builds:
       - goos: windows
         goarch: arm
     mod_timestamp: "{{ .CommitTimestamp }}"
-dockers:
-  # amd64
-  - use: buildx
-    build_flag_templates:
-      - --platform=linux/amd64
-      - --label=org.opencontainers.image.title={{ .ProjectName }}
-      - --label=org.opencontainers.image.description={{ .ProjectName }}
-      - --label=org.opencontainers.image.url=https://github.com/jaredallard/{{ .ProjectName }}
-      - --label=org.opencontainers.image.source=https://github.com/jaredallard/{{ .ProjectName }}
-      - --label=org.opencontainers.image.version={{ .Version }}
-      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
-      - --label=org.opencontainers.image.revision={{ .FullCommit }}
-      - --label=org.opencontainers.image.licenses=GPL-3.0
-    image_templates:
-      - "ghcr.io/jaredallard/{{ .ProjectName }}:{{ .Version }}-amd64"
-  # arm64
-  - use: buildx
-    goos: linux
-    goarch: arm64
-    build_flag_templates:
-      - --platform=linux/arm64
-      - --label=org.opencontainers.image.title={{ .ProjectName }}
-      - --label=org.opencontainers.image.description={{ .ProjectName }}
-      - --label=org.opencontainers.image.url=https://github.com/jaredallard/{{ .ProjectName }}
-      - --label=org.opencontainers.image.source=https://github.com/jaredallard/{{ .ProjectName }}
-      - --label=org.opencontainers.image.version={{ .Version }}
-      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
-      - --label=org.opencontainers.image.revision={{ .FullCommit }}
-      - --label=org.opencontainers.image.licenses=GPL-3.0
-    image_templates:
-      - "ghcr.io/jaredallard/{{ .ProjectName }}:{{ .Version }}-arm64"
-docker_manifests:
-  - name_template: "ghcr.io/jaredallard/{{ .ProjectName }}:{{ .Version }}"
-    image_templates:
-      - "ghcr.io/jaredallard/{{ .ProjectName }}:{{ .Version }}-arm64"
-      - "ghcr.io/jaredallard/{{ .ProjectName }}:{{ .Version }}-amd64"
+dockers_v2:
+  - images:
+      ## <<Stencil::Block(extraReleaseOpts)>>
+      - git.rgst.io/jaredallard/{{ .ProjectName }}
+      - ghcr.io/jaredallard/{{ .ProjectName }}
+      ## <</Stencil::Block>>
+    labels:
+      "org.opencontainers.image.title": "{{ .ProjectName }}"
+      "org.opencontainers.image.description": "{{ .ProjectName }}"
+      "org.opencontainers.image.source": "{{ .GitURL }}"
+      "org.opencontainers.image.version": "{{ .Version }}"
+      "org.opencontainers.image.created": "{{ .Date }}"
+      "org.opencontainers.image.revision": "{{ .FullCommit }}"
+      "org.opencontainers.image.licenses": "GPL-3.0"
+    platforms:
+      - linux/amd64
+      - linux/arm64
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -83,9 +57,18 @@ snapshot:
 changelog:
   use: git
 release:
+  gitea:
+    owner: jaredallard
+    name: ingress-anubis
+
   prerelease: "auto"
   footer: |-
-    **Full Changelog**: https://github.com/jaredallard/ingress-anubis/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **Full Changelog**: https://git.rgst.io/jaredallard/ingress-anubis/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+gitea_urls:
+  api: https://git.rgst.io/api/v1
+  download: https://git.rgst.io
 
 ## <<Stencil::Block(extraReleaseOpts)>>
+
 ## <</Stencil::Block>>

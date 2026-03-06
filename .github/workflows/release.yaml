@@ -27,6 +27,23 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
+env:
+  # When on VCS providers other than Github (e.g., forgejo), this is
+  # used to reflect a Github Token that actually has access to Github,
+  # unlike the token provided by act.
+  #
+  ## <<Stencil::Block(forgejoGithubToken)>>
+  REAL_GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_WRITE }}
+  ## <</Stencil::Block>>
+
+  # Forgejo's Action token does not have permissions to write to the
+  # package registry. For more information, see:
+  # https://codeberg.org/forgejo/forgejo/issues/6198
+  #
+  ## <<Stencil::Block(forgejoPackageToken)>>
+  FORGEJO_PACKAGE_TOKEN: ${{ github.token }}
+  ## <</Stencil::Block>>
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -40,9 +57,7 @@ jobs:
           fetch-tags: true
       - uses: jdx/mise-action@v3
         with:
-          experimental: true
-        env:
-          GH_TOKEN: ${{ github.token }}
+          github_token: ${{ env.REAL_GITHUB_TOKEN }}
       - name: Get Go directories
         id: go
         run: |
@@ -58,18 +73,22 @@ jobs:
           key: ${{ github.workflow }}-${{ runner.os }}-go-mod-cache-${{ hashFiles('go.sum') }}
       - name: Retrieve goreleaser version
         run: |-
-          echo "version=$(mise current "ubi:goreleaser/goreleaser-pro")" >> "$GITHUB_OUTPUT"
+          echo "version=$(mise current goreleaser)" >> "$GITHUB_OUTPUT"
         id: goreleaser
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: git.rgst.io
+          username: ${{ github.actor }}
+          password: ${{ env.FORGEJO_PACKAGE_TOKEN }}
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ env.REAL_GITHUB_TOKEN }}
       - name: Set up git user
         uses: fregante/setup-git-user@v2
-      - name: Download syft (SBOM)
-        uses: anchore/sbom-action/download-syft@v0.23.0
 
       # Bumping logic
       - name: Get next version
@@ -78,26 +97,26 @@ jobs:
           BUILD_RC: ${{ github.event.inputs.rc }}
           VERSION_OVERRIDE: ${{ github.event.inputs.version }}
         run: |-
-          echo "version=$(./.github/scripts/get-next-version.sh)" >> "$GITHUB_OUTPUT"
+          echo "version=$(mise run next-version)" >> "$GITHUB_OUTPUT"
       - name: Create Tag
         run: |-
           git tag -a "${{ steps.next_version.outputs.version }}" -m "Release ${{ steps.next_version.outputs.version }}"
       - name: Generate CHANGELOG
+        env:
+          GITEA_TOKEN: ${{ github.token }}
         run: |-
           mise run changelog-release
       - name: Create release artifacts and Github Release
-        uses: goreleaser/goreleaser-action@v7
-        with:
-          distribution: goreleaser-pro
-          version: v${{ steps.goreleaser.outputs.version }}
-          args: release --release-notes CHANGELOG.md --clean
+        run: |-
+          # forgejo's actions implementation sets this automatically,
+          # which we do not want.
+          unset GITHUB_TOKEN
+          goreleaser release --release-notes CHANGELOG.md --clean
+
+          ### DEVIATION
+          ./scripts/publish-helm.sh "${{ steps.next_version.outputs.version }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ## <<Stencil::Block(goreleaseEnvVars)>>
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           ## <</Stencil::Block>>
-      - uses: actions/attest-build-provenance@v4
-        with:
-          # We attest all generated _archives_ because those are what we
-          # upload to Github Releases.
-          subject-path: dist/ingress-anubis_*.*, dist/checksums.txt

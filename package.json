@@ -1,8 +1,0 @@
-{
-	"//": "Used for prettier",
-	"name": "@jaredallard/ingress-anubis",
-	"devDependencies": {
-		"prettier": "^3.5.1"
-	},
-	"private": true
-}

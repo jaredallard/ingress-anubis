@@ -12,6 +12,15 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
+env:
+  # When on VCS providers other than Github (e.g., forgejo), this is
+  # used to reflect a Github Token that actually has access to Github,
+  # unlike the token provided by act.
+  #
+  ## <<Stencil::Block(forgejoGithubToken)>>
+  REAL_GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_WRITE }}
+  ## <</Stencil::Block>>
+
 jobs:
   gotest:
     name: go test
@@ -20,9 +29,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: jdx/mise-action@v3
         with:
-          experimental: true
-        env:
-          GH_TOKEN: ${{ github.token }}
+          github_token: ${{ env.REAL_GITHUB_TOKEN }}
       - name: Get Go directories
         id: go
         run: |
@@ -39,16 +46,11 @@ jobs:
       - name: Download dependencies
         run: go mod download
       - name: Run go test
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gotestsum -- -coverprofile=cover.out ./...
-      - name: Upload test coverage
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./cover.out
-          fail_ci_if_error: true
+        env: {}
+        ## <<Stencil::Block(gotestEnvVars)>>
+
+        ## <</Stencil::Block>>
+        run: gotestsum -- -coverprofile=cover.out ./...
 
   golangci-lint:
     name: golangci-lint
@@ -57,9 +59,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: jdx/mise-action@v3
         with:
-          experimental: true
-        env:
-          GH_TOKEN: ${{ github.token }}
+          github_token: ${{ env.REAL_GITHUB_TOKEN }}
       - name: Retrieve golangci-lint version
         run: |
           echo "version=$(mise current golangci-lint)" >> "$GITHUB_OUTPUT"

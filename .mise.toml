@@ -1,19 +1,14 @@
+[tool_alias]
+dprint = "github:dprint/dprint"
 
 # Default versions of tools, to update these, set [tools.override]
 [tools]
-bun = "latest"
-git-cliff = "latest"
+dprint = "latest"
 golang = "1.26.0"
 golangci-lint = "2.10.1"
 goreleaser = "latest"
-"go:gotest.tools/gotestsum" = "1.13.0"
-"go:golang.org/x/tools/cmd/goimports" = "latest"
-"go:mvdan.cc/sh/v3/cmd/shfmt" = "latest"
-"go:github.com/caarlos0/svu" = "latest"
-
-"ubi:goreleaser/goreleaser-pro" = { version = "latest", exe = "goreleaser" }
-helm = "4.1.1"
-yq = "latest"
+gotestsum = "1.13.0"
+shfmt = "latest"
 
 [tasks.build]
 description = "Build a binary for the current platform/architecture"
@@ -23,16 +18,16 @@ run = "go build -trimpath -o ./bin/ -v ./cmd/..."
 description = "Generate a changelog for the current version"
 outputs = ["CHANGELOG.md"]
 run = ["git-cliff --config .cliff.toml --output CHANGELOG.md"]
+tools.git-cliff = "latest"
 
 [tasks.fmt]
 alias = "format"
 description = "Format code"
 run = [
 	"go mod tidy",
-	"gofmt -s -w .",
-	"goimports -w .",
+	"golangci-lint fmt",
 	"shfmt -w .",
-	"bun node_modules/.bin/prettier --write '**/*.{json,yaml,yml,md,jsonschema.json}'",
+	"dprint fmt '**/*.{json,yaml,yml,md,jsonschema.json}'",
 ]
 
 [tasks.lint]
@@ -44,6 +39,7 @@ description = """Get the version number that would be released if a release was 
 Pass --rc to get the next release candidate version.
 """
 run = ["./.github/scripts/get-next-version.sh"]
+tools.svu = "latest"
 
 [tasks.test]
 description = "Run tests"
