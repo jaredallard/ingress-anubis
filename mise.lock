@@ -1,11 +1,11 @@
 [[tools.dprint]]
 version = "0.52.0"
 backend = "github:dprint/dprint"
-"platforms.linux-arm64" = { checksum = "sha256:8a4675df3db6498d1fef37c1da508fa28dbdd9e87cd3c8ac15f5f763d2fec863", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-aarch64-unknown-linux-gnu.zip", url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/361608826"}
-"platforms.linux-x64" = { checksum = "sha256:3172f1564e4984ab0b511d5872b128ac91429a9e32a2db95977f3611a524d224", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-x86_64-unknown-linux-gnu.zip", url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/361608820"}
-"platforms.macos-arm64" = { checksum = "sha256:bb3a5be1444fcfaf2f405cbf8af7da809d055705a2ca17bd2e7edff6f2959354", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-aarch64-apple-darwin.zip", url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/361608824"}
-"platforms.macos-x64" = { checksum = "sha256:aa42a8ce7f84393c601f16bfd57e2425ccfa3b68f06d62162aa73888fd38bc75", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-x86_64-apple-darwin.zip", url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/361608827"}
-"platforms.windows-x64" = { checksum = "sha256:bbb22a19022e104b27f28426bb984fee3733294b67b3c6bbb3a8ebed1e0c1cb2", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-x86_64-pc-windows-msvc.zip", url_api = "https://api.github.com/repos/dprint/dprint/releases/assets/361608825"}
+"platforms.linux-arm64" = { checksum = "sha256:e1434b394718b63d560ecaf36c748e91f06c49fe4b09ffc8c6b6e0e6833d0900", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-aarch64-unknown-linux-musl.zip"}
+"platforms.linux-x64" = { checksum = "sha256:ff86d0b9dc28183e111e7cd7d4101fdc4e1b9be0fb84bd08f3b9a41688010aa1", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-x86_64-unknown-linux-musl.zip"}
+"platforms.macos-arm64" = { checksum = "sha256:bb3a5be1444fcfaf2f405cbf8af7da809d055705a2ca17bd2e7edff6f2959354", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-aarch64-apple-darwin.zip"}
+"platforms.macos-x64" = { checksum = "sha256:aa42a8ce7f84393c601f16bfd57e2425ccfa3b68f06d62162aa73888fd38bc75", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-x86_64-apple-darwin.zip"}
+"platforms.windows-x64" = { checksum = "sha256:bbb22a19022e104b27f28426bb984fee3733294b67b3c6bbb3a8ebed1e0c1cb2", url = "https://github.com/dprint/dprint/releases/download/0.52.0/dprint-x86_64-pc-windows-msvc.zip"}
 
 [[tools.go]]
 version = "1.26.0"
@@ -45,12 +45,12 @@ backend = "aqua:gotestyourself/gotestsum"
 
 [[tools.helm]]
 version = "4.1.1"
-backend = "github:helm/helm"
-"platforms.linux-arm64" = { checksum = "sha256:2c482158467962fc5e55a22f227d297a5c765ea0494e8800d283687f5509d80c", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-linux-arm64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199942"}
-"platforms.linux-x64" = { checksum = "sha256:51ea8c5dd8d5f3873950e81d3ed6e673aa3757aa508b75d78c41e7efa02812e6", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-linux-amd64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199961"}
-"platforms.macos-arm64" = { checksum = "sha256:5ccea021d9b7b6574cbe3458c28e1524d14f3c5891aaf9c1c23be90db710f9f1", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-darwin-arm64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199998"}
-"platforms.macos-x64" = { checksum = "sha256:b8b7d9705f133fdfded5741f82f4c2794d09ce37544176414f9ea36558c173ab", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-darwin-amd64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353200012"}
-"platforms.windows-x64" = { checksum = "sha256:6911ba292d46fcfb3a625f521197b0341eb9c0c24c202330e902cecc20e12171", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-windows-amd64.zip.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199888"}
+backend = "aqua:helm/helm"
+"platforms.linux-arm64" = { checksum = "sha256:02a5fb7742469d2d132e24cb7c3f52885894043576588c6788b6813297629edd", url = "https://get.helm.sh/helm-v4.1.1-linux-arm64.tar.gz"}
+"platforms.linux-x64" = { checksum = "sha256:5d4c7623283e6dfb1971957f4b755468ab64917066a8567dd50464af298f4031", url = "https://get.helm.sh/helm-v4.1.1-linux-amd64.tar.gz"}
+"platforms.macos-arm64" = { checksum = "sha256:b8f49e105b1d2fd8c8a90ba3fc9af48db91d2d1ca3b9e788352fc7c896bbb71a", url = "https://get.helm.sh/helm-v4.1.1-darwin-arm64.tar.gz"}
+"platforms.macos-x64" = { checksum = "sha256:6b8dbb03abb74e9ab8e69ca3f9b6459178be11317d0ac502f922621c05fdc866", url = "https://get.helm.sh/helm-v4.1.1-darwin-amd64.tar.gz"}
+"platforms.windows-x64" = { checksum = "sha256:bd0528a18d8a22431426eab3138a9479dfae00350719ac4150e81b123bfd6081", url = "https://get.helm.sh/helm-v4.1.1-windows-amd64.tar.gz"}
 
 [[tools.shfmt]]
 version = "3.12.0"

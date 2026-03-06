@@ -1,6 +1,5 @@
 [tool_alias]
 dprint = "github:dprint/dprint"
-helm = "github:helm/helm"
 
 # Default versions of tools, to update these, set [tools.override]
 [tools]
