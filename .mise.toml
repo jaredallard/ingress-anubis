@@ -9,6 +9,8 @@ golangci-lint = "2.10.1"
 goreleaser = "latest"
 gotestsum = "1.13.0"
 shfmt = "latest"
+helm = "4"
+yq = "4"
 
 [tasks.build]
 description = "Build a binary for the current platform/architecture"

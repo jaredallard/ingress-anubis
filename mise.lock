@@ -43,6 +43,15 @@ backend = "aqua:gotestyourself/gotestsum"
 "platforms.macos-x64" = { checksum = "sha256:99529350f4c7b780b1efc543ca0d9721b09f0a4228f0efa9281261f58fefa05a", url = "https://github.com/gotestyourself/gotestsum/releases/download/v1.13.0/gotestsum_1.13.0_darwin_amd64.tar.gz"}
 "platforms.windows-x64" = { checksum = "sha256:fd5a6dc69e46a0970593e70d85a7e75f16714e9c61d6d72ccc324eb82df5bb8a", url = "https://github.com/gotestyourself/gotestsum/releases/download/v1.13.0/gotestsum_1.13.0_windows_amd64.tar.gz"}
 
+[[tools.helm]]
+version = "4.1.1"
+backend = "aqua:helm/helm"
+"platforms.linux-arm64" = { checksum = "sha256:02a5fb7742469d2d132e24cb7c3f52885894043576588c6788b6813297629edd", url = "https://get.helm.sh/helm-v4.1.1-linux-arm64.tar.gz"}
+"platforms.linux-x64" = { checksum = "sha256:5d4c7623283e6dfb1971957f4b755468ab64917066a8567dd50464af298f4031", url = "https://get.helm.sh/helm-v4.1.1-linux-amd64.tar.gz"}
+"platforms.macos-arm64" = { checksum = "sha256:b8f49e105b1d2fd8c8a90ba3fc9af48db91d2d1ca3b9e788352fc7c896bbb71a", url = "https://get.helm.sh/helm-v4.1.1-darwin-arm64.tar.gz"}
+"platforms.macos-x64" = { checksum = "sha256:6b8dbb03abb74e9ab8e69ca3f9b6459178be11317d0ac502f922621c05fdc866", url = "https://get.helm.sh/helm-v4.1.1-darwin-amd64.tar.gz"}
+"platforms.windows-x64" = { checksum = "sha256:bd0528a18d8a22431426eab3138a9479dfae00350719ac4150e81b123bfd6081", url = "https://get.helm.sh/helm-v4.1.1-windows-amd64.tar.gz"}
+
 [[tools.shfmt]]
 version = "3.12.0"
 backend = "aqua:mvdan/sh"
@@ -51,3 +60,12 @@ backend = "aqua:mvdan/sh"
 "platforms.macos-arm64" = { checksum = "sha256:d903802e0ce3ecbc82b98512f55ba370b0d37a93f3f78de394f5b657052b33dd", url = "https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_darwin_arm64"}
 "platforms.macos-x64" = { checksum = "sha256:c31548693de6584e6164b7ed5fbb7b4a083f2d937ca94b4e0ddf59aa461a85e4", url = "https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_darwin_amd64"}
 "platforms.windows-x64" = { checksum = "sha256:c8bda517ba1c640ce4a715c0fa665439ddbe4357ba5e9b77b0e51e70e2b9c94b", url = "https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_windows_amd64.exe"}
+
+[[tools.yq]]
+version = "4.52.4"
+backend = "aqua:mikefarah/yq"
+"platforms.linux-arm64" = { checksum = "sha256:4c2cc022a129be5cc1187959bb4b09bebc7fb543c5837b93001c68f97ce39a5d", url = "https://github.com/mikefarah/yq/releases/download/v4.52.4/yq_linux_arm64"}
+"platforms.linux-x64" = { checksum = "sha256:0c4d965ea944b64b8fddaf7f27779ee3034e5693263786506ccd1c120f184e8c", url = "https://github.com/mikefarah/yq/releases/download/v4.52.4/yq_linux_amd64"}
+"platforms.macos-arm64" = { checksum = "sha256:6bfa43a439936644d63c70308832390c8838290d064970eaada216219c218a13", url = "https://github.com/mikefarah/yq/releases/download/v4.52.4/yq_darwin_arm64"}
+"platforms.macos-x64" = { checksum = "sha256:d72a75fe9953c707d395f653d90095b133675ddd61aa738e1ac9a73c6c05e8be", url = "https://github.com/mikefarah/yq/releases/download/v4.52.4/yq_darwin_amd64"}
+"platforms.windows-x64" = { checksum = "sha256:b7c4186f8a3e32879ddf99389bf59a4b2861f0f1b41ef58647d903b0a11e8151", url = "https://github.com/mikefarah/yq/releases/download/v4.52.4/yq_windows_amd64.exe"}
