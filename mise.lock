@@ -45,12 +45,12 @@ backend = "aqua:gotestyourself/gotestsum"
 
 [[tools.helm]]
 version = "4.1.1"
-backend = "aqua:helm/helm"
-"platforms.linux-arm64" = { checksum = "sha256:02a5fb7742469d2d132e24cb7c3f52885894043576588c6788b6813297629edd", url = "https://get.helm.sh/helm-v4.1.1-linux-arm64.tar.gz"}
-"platforms.linux-x64" = { checksum = "sha256:5d4c7623283e6dfb1971957f4b755468ab64917066a8567dd50464af298f4031", url = "https://get.helm.sh/helm-v4.1.1-linux-amd64.tar.gz"}
-"platforms.macos-arm64" = { checksum = "sha256:b8f49e105b1d2fd8c8a90ba3fc9af48db91d2d1ca3b9e788352fc7c896bbb71a", url = "https://get.helm.sh/helm-v4.1.1-darwin-arm64.tar.gz"}
-"platforms.macos-x64" = { checksum = "sha256:6b8dbb03abb74e9ab8e69ca3f9b6459178be11317d0ac502f922621c05fdc866", url = "https://get.helm.sh/helm-v4.1.1-darwin-amd64.tar.gz"}
-"platforms.windows-x64" = { checksum = "sha256:bd0528a18d8a22431426eab3138a9479dfae00350719ac4150e81b123bfd6081", url = "https://get.helm.sh/helm-v4.1.1-windows-amd64.tar.gz"}
+backend = "github:helm/helm"
+"platforms.linux-arm64" = { checksum = "sha256:2c482158467962fc5e55a22f227d297a5c765ea0494e8800d283687f5509d80c", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-linux-arm64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199942"}
+"platforms.linux-x64" = { checksum = "sha256:51ea8c5dd8d5f3873950e81d3ed6e673aa3757aa508b75d78c41e7efa02812e6", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-linux-amd64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199961"}
+"platforms.macos-arm64" = { checksum = "sha256:5ccea021d9b7b6574cbe3458c28e1524d14f3c5891aaf9c1c23be90db710f9f1", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-darwin-arm64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199998"}
+"platforms.macos-x64" = { checksum = "sha256:b8b7d9705f133fdfded5741f82f4c2794d09ce37544176414f9ea36558c173ab", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-darwin-amd64.tar.gz.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353200012"}
+"platforms.windows-x64" = { checksum = "sha256:6911ba292d46fcfb3a625f521197b0341eb9c0c24c202330e902cecc20e12171", url = "https://github.com/helm/helm/releases/download/v4.1.1/helm-v4.1.1-windows-amd64.zip.asc", url_api = "https://api.github.com/repos/helm/helm/releases/assets/353199888"}
 
 [[tools.shfmt]]
 version = "3.12.0"
