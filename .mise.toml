@@ -4,8 +4,8 @@ dprint = "github:dprint/dprint"
 # Default versions of tools, to update these, set [tools.override]
 [tools]
 dprint = "latest"
-golang = "1.26.0"
-golangci-lint = "2.10.1"
+golang = "1.26.1"
+golangci-lint = "2.11.3"
 goreleaser = "latest"
 gotestsum = "1.13.0"
 shfmt = "latest"

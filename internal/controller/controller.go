@@ -24,7 +24,7 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/jaredallard/ingress-anubis/internal/config"
-	"go.rgst.io/stencil/v2/pkg/slogext"
+	"go.rgst.io/jaredallard/slogext/v2"
 	networkingv1 "k8s.io/api/networking/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"

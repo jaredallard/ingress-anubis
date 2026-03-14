@@ -26,7 +26,7 @@ import (
 
 	"github.com/jaredallard/ingress-anubis/internal/config"
 	"github.com/jaredallard/ingress-anubis/internal/controller"
-	"go.rgst.io/stencil/v2/pkg/slogext"
+	"go.rgst.io/jaredallard/slogext/v2"
 )
 
 func entrypoint(log slogext.Logger) error {
