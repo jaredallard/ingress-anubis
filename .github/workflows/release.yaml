@@ -55,7 +55,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - uses: jdx/mise-action@v3
+      - uses: jdx/mise-action@v4
         with:
           github_token: ${{ env.REAL_GITHUB_TOKEN }}
       - name: Get Go directories
