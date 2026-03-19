@@ -9,7 +9,7 @@ require (
 	go.rgst.io/jaredallard/slogext/v2 v2.0.0
 	k8s.io/api v0.35.2
 	k8s.io/apimachinery v0.35.2
-	k8s.io/utils v0.0.0-20260210185600-b8788abfbbc2
+	k8s.io/utils v0.0.0-20260319190234-28399d86e0b5
 	sigs.k8s.io/controller-runtime v0.23.3
 )
 
