@@ -5,7 +5,7 @@ dprint = "github:dprint/dprint"
 [tools]
 dprint = "latest"
 golang = "1.26.1"
-golangci-lint = "2.11.3"
+golangci-lint = "2.11.4"
 goreleaser = "latest"
 gotestsum = "1.13.0"
 shfmt = "latest"
