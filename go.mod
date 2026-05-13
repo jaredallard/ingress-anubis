@@ -7,8 +7,8 @@ require (
 	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
 	go.rgst.io/jaredallard/slogext/v2 v2.0.0
-	k8s.io/api v0.36.0
-	k8s.io/apimachinery v0.36.0
+	k8s.io/api v0.36.1
+	k8s.io/apimachinery v0.36.1
 	k8s.io/utils v0.0.0-20260507154919-ff6756f316d2
 	sigs.k8s.io/controller-runtime v0.24.0
 )
