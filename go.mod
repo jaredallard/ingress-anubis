@@ -6,7 +6,7 @@ require (
 	github.com/caarlos0/env/v11 v11.4.1
 	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
-	go.rgst.io/jaredallard/slogext/v2 v2.0.0
+	go.rgst.io/jaredallard/slogext/v2 v2.1.0
 	k8s.io/api v0.36.1
 	k8s.io/apimachinery v0.36.1
 	k8s.io/utils v0.0.0-20260507154919-ff6756f316d2
