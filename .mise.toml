@@ -43,7 +43,7 @@ Pass --rc to get the next release candidate version.
 run = ["./.github/scripts/get-next-version.sh"]
 # 3.4.1 is not attested
 # See: https://github.com/caarlos0/svu/issues/292
-tools.svu = "3.4.0"
+tools.svu = "3.4.4"
 
 [tasks.test]
 description = "Run tests"
